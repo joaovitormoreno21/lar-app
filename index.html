@@ -103,6 +103,18 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
 .btn-save:active{transform:translateY(3px);box-shadow:0 1px 0 var(--blue-d);}
 .btn-cancel{width:100%;padding:14px;border-radius:14px;background:var(--white);color:var(--ink-mid);border:2px solid var(--border);font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px;}
 
+/* ── Menu de ação rápida ── */
+.action-menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:8px;}
+.action-menu-item{display:flex;flex-direction:column;align-items:center;gap:8px;background:transparent;border:none;cursor:pointer;padding:14px 8px;border-radius:16px;font-family:'Nunito',sans-serif;transition:background 0.15s;}
+.action-menu-item:active{background:var(--bg);}
+.action-menu-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+.action-menu-label{font-size:13px;font-weight:800;color:var(--ink);}
+
+/* ── Prioridade/urgência de tarefa ── */
+.priority-row{display:flex;gap:8px;}
+.priority-btn{flex:1;padding:10px 6px;border-radius:10px;border:2px solid var(--border);background:white;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:var(--ink-mid);cursor:pointer;text-align:center;}
+.priority-btn.on{border-color:var(--yellow);background:var(--yellow-l);color:#92400E;}
+
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-20px);width:calc(100% - 40px);max-width:560px;background:var(--ink);color:white;padding:14px 18px;border-radius:14px;font-size:14px;font-weight:800;z-index:200;display:flex;align-items:center;gap:10px;opacity:0;transition:all 0.3s cubic-bezier(0.34,1.4,0.64,1);pointer-events:none;}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 
@@ -390,12 +402,19 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
         </div>
         <div class="gap"></div>
         <div class="kanban">
-          <div class="k-col" style="border-color:var(--red)">
-            <div class="k-head" style="background:var(--red-l)">
-              <div class="k-head-title" style="color:#991B1B">😬 Pendente</div>
-              <span class="k-count" style="color:#991B1B" id="k-count-pending">0</span>
+          <div class="k-col" style="border-color:var(--orange)">
+            <div class="k-head" style="background:var(--orange-l)">
+              <div class="k-head-title" style="color:#9A3412">📌 Pendente</div>
+              <span class="k-count" style="color:#9A3412" id="k-count-pending">0</span>
             </div>
             <div class="k-body" id="k-pending"></div>
+          </div>
+          <div class="k-col" style="border-color:var(--red)">
+            <div class="k-head" style="background:var(--red-l)">
+              <div class="k-head-title" style="color:#991B1B">⏰ Atrasada</div>
+              <span class="k-count" style="color:#991B1B" id="k-count-late">0</span>
+            </div>
+            <div class="k-body" id="k-late"></div>
           </div>
           <div class="k-col" style="border-color:var(--green)">
             <div class="k-head" style="background:var(--green-l)">
@@ -522,7 +541,30 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
     </div>
 
     <!-- FAB -->
-    <button class="fab" id="fab" onclick="openModal()">+</button>
+    <button class="fab" id="fab" onclick="openActionMenu()">+</button>
+  </div>
+
+  <!-- MODAL: menu de ação rápida -->
+  <div class="modal" id="modal-action-menu">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">O que você quer criar?</div>
+      <div class="action-menu-grid">
+        <button class="action-menu-item" onclick="openModalDirect('gasto')">
+          <span class="action-menu-icon" style="background:var(--blue-l)">💸</span>
+          <span class="action-menu-label">Gasto</span>
+        </button>
+        <button class="action-menu-item" onclick="openModalDirect('tarefa')">
+          <span class="action-menu-icon" style="background:var(--green-l)">✅</span>
+          <span class="action-menu-label">Tarefa</span>
+        </button>
+        <button class="action-menu-item" onclick="openModalDirect('evento')">
+          <span class="action-menu-icon" style="background:var(--pink-l)">📅</span>
+          <span class="action-menu-label">Evento</span>
+        </button>
+      </div>
+      <button class="btn-cancel" onclick="closeModal('modal-action-menu')">Cancelar</button>
+    </div>
   </div>
 
   <!-- MODAL: novo gasto -->
@@ -567,9 +609,24 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
         <label>O que precisa ser feito?</label>
         <input type="text" id="t-desc" placeholder="Ex: Pagar conta de luz">
       </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Responsável</label>
+          <select id="t-who"></select>
+        </div>
+        <div class="field">
+          <label>Prazo</label>
+          <input type="date" id="t-due">
+        </div>
+      </div>
       <div class="field">
-        <label>Responsável</label>
-        <select id="t-who"></select>
+        <label>Pontos da tarefa</label>
+        <div class="priority-row">
+          <button type="button" class="priority-btn" onclick="setTaskPoints(10, this)">10 pts<br><span style="font-weight:600;font-size:10px;">Rápida</span></button>
+          <button type="button" class="priority-btn on" onclick="setTaskPoints(30, this)">30 pts<br><span style="font-weight:600;font-size:10px;">Normal</span></button>
+          <button type="button" class="priority-btn" onclick="setTaskPoints(50, this)">50 pts<br><span style="font-weight:600;font-size:10px;">Trabalhosa</span></button>
+          <button type="button" class="priority-btn" onclick="setTaskPoints(100, this)">100 pts<br><span style="font-weight:600;font-size:10px;">Grande</span></button>
+        </div>
       </div>
       <button class="btn-save" onclick="saveTask()">Salvar</button>
       <button class="btn-cancel" onclick="closeModal('modal-tarefa')">Cancelar</button>
@@ -972,10 +1029,17 @@ function renderFinanceList() {
   }).join('');
 }
 
+function isTaskLate(t) {
+  if (t.done || !t.due) return false;
+  const todayStr = new Date().toISOString().slice(0,10);
+  return t.due < todayStr;
+}
+
 async function loadTasks() {
   const snap = await db.collection('households').doc(householdId).collection('tasks').orderBy('createdAt','desc').limit(50).get();
   const homeList = document.getElementById('home-tasks');
   const pendCol = document.getElementById('k-pending');
+  const lateCol = document.getElementById('k-late');
   const doneCol = document.getElementById('k-done');
 
   const tasks = [];
@@ -984,8 +1048,10 @@ async function loadTasks() {
   if (!tasks.length) {
     homeList.innerHTML = '<div class="empty-state">Sem tarefas</div>';
     pendCol.innerHTML = '<div class="empty-state">Sem tarefas</div>';
+    lateCol.innerHTML = '<div class="empty-state">Nenhuma atrasada 🎉</div>';
     doneCol.innerHTML = '<div class="empty-state">Sem tarefas</div>';
     document.getElementById('k-count-pending').textContent = '0';
+    document.getElementById('k-count-late').textContent = '0';
     document.getElementById('k-count-done').textContent = '0';
     return;
   }
@@ -993,35 +1059,50 @@ async function loadTasks() {
   homeList.innerHTML = tasks.slice(0,3).map(t => {
     const member = householdMembers.find(m => m.uid === t.assignedTo);
     const name = t.assignedTo === currentUser.uid ? 'Você' : (member ? member.name.split(' ')[0] : 'Alguém');
+    const late = isTaskLate(t);
+    const status = t.done ? 'concluída' : late ? 'atrasada' : 'pendente';
     return `
       <div class="task-row">
         <div class="t-chk ${t.done?'done':''}" onclick="toggleTask('${t.id}', ${!t.done})">${t.done?'✓':''}</div>
         <div>
           <div class="t-name ${t.done?'done':''}">${t.description}</div>
-          <div class="t-meta">${name} · ${t.done?'concluída':'pendente'}</div>
+          <div class="t-meta" style="${late?'color:var(--red)':''}">${name} · ${status}</div>
         </div>
       </div>`;
   }).join('');
 
-  const pending = tasks.filter(t => !t.done);
+  const pending = tasks.filter(t => !t.done && !isTaskLate(t));
+  const late = tasks.filter(t => !t.done && isTaskLate(t));
   const done = tasks.filter(t => t.done);
 
   document.getElementById('k-count-pending').textContent = pending.length;
+  document.getElementById('k-count-late').textContent = late.length;
   document.getElementById('k-count-done').textContent = done.length;
 
   pendCol.innerHTML = pending.length ? pending.map(t => kanbanCard(t)).join('') : '<div class="empty-state">Nada pendente 🎉</div>';
+  lateCol.innerHTML = late.length ? late.map(t => kanbanCard(t)).join('') : '<div class="empty-state">Nenhuma atrasada 🎉</div>';
   doneCol.innerHTML = done.length ? done.map(t => kanbanCard(t)).join('') : '<div class="empty-state">Nenhuma ainda</div>';
 }
 
 function kanbanCard(t) {
   const member = householdMembers.find(m => m.uid === t.assignedTo);
   const name = t.assignedTo === currentUser.uid ? 'Você' : (member ? member.name.split(' ')[0] : 'Alguém');
+  const late = isTaskLate(t);
+  const pts = t.points || 30;
+  let dueLabel = '';
+  if (t.done) dueLabel = '✅ feita';
+  else if (late) dueLabel = '⏰ venceu';
+  else if (t.due) {
+    const d = new Date(t.due + 'T00:00:00');
+    dueLabel = '📆 ' + d.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
+  } else dueLabel = '📌 sem prazo';
+
   return `
     <div class="k-card ${t.done?'k-done':''}" onclick="toggleTask('${t.id}', ${!t.done})">
       <div class="k-card-name">${t.description}</div>
       <div class="k-card-foot">
         <span class="k-person" style="background:${colorForUid(t.assignedTo)}22;color:${colorForUid(t.assignedTo)}">${name}</span>
-        <span class="k-due">${t.done?'✅ feita':'📌 pendente'}</span>
+        <span class="k-due ${late?'late':''}">${dueLabel} · ⭐${pts}</span>
       </div>
     </div>`;
 }
@@ -1030,8 +1111,10 @@ async function toggleTask(taskId, done) {
   await db.collection('households').doc(householdId).collection('tasks').doc(taskId).update({ done });
   if (done) {
     const taskDoc = await db.collection('households').doc(householdId).collection('tasks').doc(taskId).get();
-    await awardPoints(POINTS.task, 'task', taskDoc.data().description, '✅');
-    celebrateTaskDone(taskDoc.data().description);
+    const taskData = taskDoc.data();
+    const pts = taskData.points || POINTS.task;
+    await awardPoints(pts, 'task', taskData.description, '✅');
+    celebrateTaskDone(taskData.description, pts);
   }
   await loadTasks();
   loadRewards();
@@ -1046,15 +1129,25 @@ function nav(id) {
   document.getElementById('screen').scrollTop = 0;
 
   document.getElementById('fab').style.display = (id === 'familia' || id === 'recompensas') ? 'none' : 'flex';
-  if (id === 'tarefas') currentModalType = 'tarefa';
-  else if (id === 'agenda') currentModalType = 'evento';
-  else currentModalType = 'gasto';
 }
 
-function openModal() {
-  const modalId = currentModalType === 'tarefa' ? 'modal-tarefa' : currentModalType === 'evento' ? 'modal-evento' : 'modal-gasto';
-  document.getElementById(modalId).classList.add('open');
+function openActionMenu() {
+  document.getElementById('modal-action-menu').classList.add('open');
 }
+
+function openModalDirect(type) {
+  closeModal('modal-action-menu');
+  const modalId = type === 'tarefa' ? 'modal-tarefa' : type === 'evento' ? 'modal-evento' : 'modal-gasto';
+  if (type === 'tarefa') {
+    document.getElementById('t-due').valueAsDate = new Date();
+    resetTaskPointsUI();
+  }
+  if (type === 'evento') {
+    document.getElementById('ev-date').valueAsDate = new Date();
+  }
+  setTimeout(() => document.getElementById(modalId).classList.add('open'), 150);
+}
+
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
 }
@@ -1082,20 +1175,37 @@ async function saveExpense() {
   loadRewards();
 }
 
+let selectedTaskPoints = 30;
+
+function setTaskPoints(points, btn) {
+  selectedTaskPoints = points;
+  document.querySelectorAll('.priority-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function resetTaskPointsUI() {
+  selectedTaskPoints = 30;
+  document.querySelectorAll('.priority-btn').forEach((b,i) => b.classList.toggle('on', i === 1));
+}
+
 async function saveTask() {
   const desc = document.getElementById('t-desc').value.trim();
   const who = document.getElementById('t-who').value;
+  const due = document.getElementById('t-due').value;
   if (!desc) { showToast('Descreva a tarefa'); return; }
 
   await db.collection('households').doc(householdId).collection('tasks').add({
     description: desc,
     assignedTo: who,
+    due: due || null,
+    points: selectedTaskPoints,
     done: false,
     createdAt: new Date()
   });
 
   closeModal('modal-tarefa');
   document.getElementById('t-desc').value = '';
+  document.getElementById('t-due').value = '';
   showToast('📝 Tarefa criada!');
   loadTasks();
   renderStatsGrid();
@@ -1106,8 +1216,9 @@ function renderStatsGrid() {
   if (!el) return;
   const total = allExpenses.reduce((s,e) => s + e.value, 0);
   const pendCount = document.getElementById('k-count-pending') ? document.getElementById('k-count-pending').textContent : '0';
+  const lateCount = document.getElementById('k-count-late') ? document.getElementById('k-count-late').textContent : '0';
   const doneCount = document.getElementById('k-count-done') ? document.getElementById('k-count-done').textContent : '0';
-  const totalTasks = parseInt(pendCount) + parseInt(doneCount);
+  const totalTasks = parseInt(pendCount) + parseInt(lateCount) + parseInt(doneCount);
 
   el.innerHTML = `
     <div class="stat-card sc-blue">
@@ -1350,9 +1461,9 @@ function renderHistory(history) {
 
 const CONFETTI_COLORS = ['#3B82F6','#F472B6','#FBBF24','#34D399','#A855F7','#FB923C'];
 
-function celebrateTaskDone(taskName) {
+function celebrateTaskDone(taskName, points) {
   launchConfetti();
-  setTimeout(() => showRewardPopup(taskName), 300);
+  setTimeout(() => showRewardPopup(taskName, points), 300);
 }
 
 function launchConfetti() {
@@ -1406,11 +1517,11 @@ function launchConfetti() {
   setTimeout(() => { overlay.innerHTML = ''; }, 2000);
 }
 
-function showRewardPopup(taskName) {
+function showRewardPopup(taskName, points) {
   document.getElementById('overlay-dim').classList.add('show');
   document.getElementById('r-title').textContent = 'Tarefa concluída!';
   document.getElementById('r-sub').textContent = taskName;
-  document.getElementById('r-pts-badge').textContent = `+${POINTS.task} pontos! ⭐`;
+  document.getElementById('r-pts-badge').textContent = `+${points || POINTS.task} pontos! ⭐`;
   document.getElementById('reward-popup').classList.add('show');
 }
 
