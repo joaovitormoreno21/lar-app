@@ -289,11 +289,17 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;min-h
   <div class="toast" id="toast">🎉 Gasto salvo!</div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 
 <script>
+if (typeof firebase === 'undefined') {
+  document.getElementById('login-error').textContent = 'Erro: Firebase não carregou. Verifique sua conexão e recarregue a página.';
+  document.getElementById('login-error').style.display = 'block';
+  throw new Error('Firebase SDK não carregado');
+}
+
 const firebaseConfig = {
   apiKey: "AIzaSyAdV1UmSC0Be-xgeCACTYXcEaLw-5FvWlE",
   authDomain: "lar-app-2cb72.firebaseapp.com",
