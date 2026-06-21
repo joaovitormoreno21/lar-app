@@ -51,6 +51,14 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
 .av-pair{display:flex;}
 .av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:white;border:2px solid white;flex-shrink:0;}
 .logout-btn{width:36px;height:36px;border-radius:12px;background:var(--blue-l);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.notif-bell-btn{width:36px;height:36px;border-radius:12px;background:var(--blue-l);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;position:relative;}
+.notif-badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:white;font-size:10px;font-weight:900;min-width:17px;height:17px;border-radius:20px;display:flex;align-items:center;justify-content:center;border:2px solid white;padding:0 3px;}
+.notif-item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:2px dashed #F1F5F9;}
+.notif-item:last-child{border:none;}
+.notif-item.unread{background:var(--blue-l);border-radius:10px;padding:12px;margin-bottom:6px;border-bottom:none;}
+.notif-icon{font-size:20px;flex-shrink:0;}
+.notif-text{flex:1;font-size:13px;font-weight:700;color:var(--ink);line-height:1.4;}
+.notif-when{font-size:11px;font-weight:600;color:var(--ink-light);margin-top:3px;}
 
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;background:var(--white);border-top:2px solid var(--border);display:flex;padding:10px 8px calc(10px + env(safe-area-inset-bottom));z-index:50;}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border-radius:12px;cursor:pointer;border:none;background:transparent;font-family:'Nunito',sans-serif;transition:background 0.15s;}
@@ -126,6 +134,8 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
 .member-name{font-size:14px;font-weight:800;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .member-email{font-size:11px;font-weight:600;color:var(--ink-light);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .member-you{font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;background:var(--green-l);color:var(--green-d);flex-shrink:0;}
+.member-action-btn{width:30px;height:30px;border-radius:8px;border:2px solid var(--border);background:white;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:4px;}
+.member-remove-btn{border-color:var(--red-l);}
 .invite-code-box{background:var(--blue-l);border-radius:14px;padding:16px;text-align:center;margin-bottom:16px;}
 .invite-code-label{font-size:11px;font-weight:800;color:var(--blue-d);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;}
 .invite-code{font-size:28px;font-weight:900;color:var(--blue-d);letter-spacing:4px;margin-bottom:10px;}
@@ -280,6 +290,13 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
 .k-due{font-size:11px;font-weight:700;color:var(--ink-light);}
 .k-due.late{color:var(--red);}
 .k-done{opacity:0.5;}
+.k-waiting{opacity:1;border-color:var(--yellow);background:var(--yellow-l);}
+.k-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.k-card-top .k-card-name{margin-bottom:0;flex:1;}
+.k-delete-btn{background:none;border:none;font-size:13px;cursor:pointer;flex-shrink:0;opacity:0.6;padding:2px;}
+.k-approval-row{display:flex;gap:6px;margin-top:8px;}
+.k-approve-btn{flex:1;padding:7px;border-radius:8px;border:none;background:var(--green);color:white;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;cursor:pointer;}
+.k-reject-btn{flex:1;padding:7px;border-radius:8px;border:2px solid var(--border);background:white;color:var(--ink-mid);font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;cursor:pointer;}
 .k-done .k-card-name{text-decoration:line-through;}
 
 /* ── Calendar ── */
@@ -337,6 +354,10 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
         <div class="hdr">
           <div class="hdr-title">🏠 Início</div>
           <div class="hdr-right">
+            <button class="notif-bell-btn" onclick="openNotificationsPanel()" title="Notificações">
+              🔔
+              <span class="notif-badge" id="notif-badge" style="display:none;">0</span>
+            </button>
             <button class="logout-btn" onclick="logout()" title="Sair">🚪</button>
             <div class="av-pair" id="home-avatars"></div>
           </div>
@@ -655,6 +676,16 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
     </div>
   </div>
 
+  <!-- PAINEL: notificações -->
+  <div class="modal" id="modal-notificacoes">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">🔔 Notificações</div>
+      <div id="notifications-list" style="max-height:50vh;overflow-y:auto;"></div>
+      <button class="btn-cancel" onclick="closeNotificationsPanel()">Fechar</button>
+    </div>
+  </div>
+
   <div class="anim-overlay" id="anim-overlay"></div>
   <div class="overlay-dim" id="overlay-dim" onclick="closeReward()"></div>
   <div class="reward-popup" id="reward-popup">
@@ -784,7 +815,8 @@ async function setupHousehold() {
     await db.collection('households').doc(householdId).set({
       createdAt: new Date(),
       inviteCode: inviteCode,
-      memberIds: [currentUser.uid]
+      memberIds: [currentUser.uid],
+      adminIds: [currentUser.uid]
     });
     await userRef.set({
       email: currentUser.email,
@@ -808,10 +840,20 @@ async function setupHousehold() {
   await loadHouseholdMembers();
 }
 
+let householdAdminIds = [];
+
 async function loadHouseholdMembers() {
   const hhDoc = await db.collection('households').doc(householdId).get();
-  const memberIds = hhDoc.data().memberIds || [];
-  document.getElementById('invite-code').textContent = hhDoc.data().inviteCode || '------';
+  const hhData = hhDoc.data();
+  const memberIds = hhData.memberIds || [];
+  document.getElementById('invite-code').textContent = hhData.inviteCode || '------';
+
+  if (!hhData.adminIds) {
+    householdAdminIds = memberIds.length ? [memberIds[0]] : [];
+    await db.collection('households').doc(householdId).update({ adminIds: householdAdminIds });
+  } else {
+    householdAdminIds = hhData.adminIds;
+  }
 
   householdMembers = [];
   for (const uid of memberIds) {
@@ -825,18 +867,57 @@ async function loadHouseholdMembers() {
   renderTaskWhoOptions();
 }
 
+function isCurrentUserAdmin() {
+  return householdAdminIds.includes(currentUser.uid);
+}
+
 function renderMembers() {
   const list = document.getElementById('members-list');
-  list.innerHTML = householdMembers.map(m => `
-    <div class="member-row">
-      <div class="member-av" style="background:${colorForUid(m.uid)}">${(m.name||'?')[0].toUpperCase()}</div>
-      <div class="member-info">
-        <div class="member-name">${m.name}</div>
-        <div class="member-email">${m.email}</div>
-      </div>
-      ${m.uid === currentUser.uid ? '<span class="member-you">Você</span>' : ''}
-    </div>
-  `).join('');
+  const amAdmin = isCurrentUserAdmin();
+  list.innerHTML = householdMembers.map(m => {
+    const memberIsAdmin = householdAdminIds.includes(m.uid);
+    const isMe = m.uid === currentUser.uid;
+    let actions = '';
+    if (amAdmin && !isMe) {
+      actions = `
+        <button class="member-action-btn" onclick="toggleAdmin('${m.uid}', ${!memberIsAdmin})">${memberIsAdmin ? '⬇️' : '⬆️'}</button>
+        <button class="member-action-btn member-remove-btn" onclick="removeMember('${m.uid}')">🗑️</button>`;
+    }
+    return `
+      <div class="member-row">
+        <div class="member-av" style="background:${colorForUid(m.uid)}">${(m.name||'?')[0].toUpperCase()}</div>
+        <div class="member-info">
+          <div class="member-name">${m.name} ${memberIsAdmin ? '👑' : ''}</div>
+          <div class="member-email">${m.email}</div>
+        </div>
+        ${isMe ? '<span class="member-you">Você</span>' : ''}
+        ${actions}
+      </div>`;
+  }).join('');
+}
+
+async function toggleAdmin(uid, makeAdmin) {
+  if (!isCurrentUserAdmin()) return;
+  const update = makeAdmin
+    ? firebase.firestore.FieldValue.arrayUnion(uid)
+    : firebase.firestore.FieldValue.arrayRemove(uid);
+  await db.collection('households').doc(householdId).update({ adminIds: update });
+  showToast(makeAdmin ? '👑 Agora é administrador' : 'Administração removida');
+  await loadHouseholdMembers();
+}
+
+async function removeMember(uid) {
+  if (!isCurrentUserAdmin()) return;
+  const member = householdMembers.find(m => m.uid === uid);
+  if (!confirm(`Remover ${member ? member.name : 'este membro'} do lar?`)) return;
+
+  await db.collection('households').doc(householdId).update({
+    memberIds: firebase.firestore.FieldValue.arrayRemove(uid),
+    adminIds: firebase.firestore.FieldValue.arrayRemove(uid)
+  });
+
+  showToast('Membro removido');
+  await loadHouseholdMembers();
 }
 
 function renderAvatars() {
@@ -906,9 +987,85 @@ function renderGreeting() {
 }
 
 async function loadEverything() {
-  await Promise.all([loadExpenses(), loadTasks(), loadRewards(), loadEvents()]);
+  await Promise.all([loadExpenses(), loadTasks(), loadRewards(), loadEvents(), loadNotifications()]);
   renderStreak();
   renderStatsGrid();
+}
+
+/* ── Notificações ── */
+async function createNotification(forUserId, type, text, refId) {
+  await db.collection('households').doc(householdId).collection('notifications').add({
+    forUserId, type, text, refId,
+    read: false,
+    createdAt: new Date()
+  });
+}
+
+async function loadNotifications() {
+  const snap = await db.collection('households').doc(householdId).collection('notifications')
+    .where('forUserId', '==', currentUser.uid)
+    .limit(50)
+    .get();
+
+  const notifications = [];
+  snap.forEach(doc => notifications.push({ id: doc.id, ...doc.data() }));
+  notifications.sort((a,b) => {
+    const ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
+    const tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
+    return tb - ta;
+  });
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+  const badge = document.getElementById('notif-badge');
+  if (badge) {
+    if (unreadCount > 0) {
+      badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  const list = document.getElementById('notifications-list');
+  if (!list) return;
+  if (!notifications.length) {
+    list.innerHTML = '<div class="empty-state">Nenhuma notificação ainda</div>';
+    return;
+  }
+
+  list.innerHTML = notifications.map(n => {
+    const when = n.createdAt && n.createdAt.toDate ? n.createdAt.toDate().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+    const icon = n.type === 'task_validation' ? '⏳' : '🔔';
+    let actionBtn = '';
+    if (n.type === 'task_validation' && n.refId) {
+      actionBtn = `<button class="k-approve-btn" style="margin-top:8px;width:100%;" onclick="approveTask('${n.refId}')">✅ Validar agora</button>`;
+    }
+    return `
+      <div class="notif-item ${n.read?'':'unread'}">
+        <span class="notif-icon">${icon}</span>
+        <div class="notif-text">
+          ${n.text}
+          <div class="notif-when">${when}</div>
+          ${actionBtn}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function openNotificationsPanel() {
+  document.getElementById('modal-notificacoes').classList.add('open');
+  const snap = await db.collection('households').doc(householdId).collection('notifications')
+    .where('forUserId', '==', currentUser.uid)
+    .where('read', '==', false)
+    .get();
+  const batch = db.batch();
+  snap.forEach(doc => batch.update(doc.ref, { read: true }));
+  if (!snap.empty) await batch.commit();
+  loadNotifications();
+}
+
+function closeNotificationsPanel() {
+  document.getElementById('modal-notificacoes').classList.remove('open');
 }
 
 function renderStreak() {
@@ -1089,35 +1246,117 @@ function kanbanCard(t) {
   const name = t.assignedTo === currentUser.uid ? 'Você' : (member ? member.name.split(' ')[0] : 'Alguém');
   const late = isTaskLate(t);
   const pts = t.points || 30;
+  const canDelete = t.createdBy === currentUser.uid;
+  const waitingApproval = t.done && t.pendingApproval;
+  const iAmCreator = t.createdBy === currentUser.uid && t.assignedTo !== currentUser.uid;
+
   let dueLabel = '';
-  if (t.done) dueLabel = '✅ feita';
+  if (waitingApproval) dueLabel = '⏳ aguardando validação';
+  else if (t.done) dueLabel = '✅ feita';
   else if (late) dueLabel = '⏰ venceu';
   else if (t.due) {
     const d = new Date(t.due + 'T00:00:00');
     dueLabel = '📆 ' + d.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
   } else dueLabel = '📌 sem prazo';
 
+  const clickAction = waitingApproval ? '' : `onclick="toggleTask('${t.id}', ${!t.done})"`;
+  const deleteBtn = canDelete ? `<button class="k-delete-btn" onclick="event.stopPropagation(); deleteTask('${t.id}')">🗑️</button>` : '';
+
+  let approvalButtons = '';
+  if (waitingApproval && iAmCreator) {
+    approvalButtons = `
+      <div class="k-approval-row">
+        <button class="k-approve-btn" onclick="event.stopPropagation(); approveTask('${t.id}')">✅ Validar</button>
+        <button class="k-reject-btn" onclick="event.stopPropagation(); rejectTask('${t.id}')">↩️ Devolver</button>
+      </div>`;
+  }
+
   return `
-    <div class="k-card ${t.done?'k-done':''}" onclick="toggleTask('${t.id}', ${!t.done})">
-      <div class="k-card-name">${t.description}</div>
+    <div class="k-card ${t.done && !waitingApproval ?'k-done':''} ${waitingApproval?'k-waiting':''}" ${clickAction}>
+      <div class="k-card-top">
+        <div class="k-card-name">${t.description}</div>
+        ${deleteBtn}
+      </div>
       <div class="k-card-foot">
         <span class="k-person" style="background:${colorForUid(t.assignedTo)}22;color:${colorForUid(t.assignedTo)}">${name}</span>
         <span class="k-due ${late?'late':''}">${dueLabel} · ⭐${pts}</span>
       </div>
+      ${approvalButtons}
     </div>`;
 }
 
 async function toggleTask(taskId, done) {
-  await db.collection('households').doc(householdId).collection('tasks').doc(taskId).update({ done });
-  if (done) {
-    const taskDoc = await db.collection('households').doc(householdId).collection('tasks').doc(taskId).get();
-    const taskData = taskDoc.data();
-    const pts = taskData.points || POINTS.task;
-    await awardPoints(pts, 'task', taskData.description, '✅');
-    celebrateTaskDone(taskData.description, pts);
+  const taskRef = db.collection('households').doc(householdId).collection('tasks').doc(taskId);
+  const taskDoc = await taskRef.get();
+  const taskData = taskDoc.data();
+  const pts = taskData.points || POINTS.task;
+  const createdBy = taskData.createdBy;
+  const selfCreated = !createdBy || createdBy === taskData.assignedTo;
+
+  if (!done) {
+    await taskRef.update({ done: false, pendingApproval: false });
+    await loadTasks();
+    loadRewards();
+    renderStatsGrid();
+    return;
   }
+
+  if (selfCreated) {
+    await taskRef.update({ done: true, pendingApproval: false });
+    if (!taskData.pointsAwarded) {
+      await awardPoints(pts, 'task', taskData.description, '✅');
+      await taskRef.update({ pointsAwarded: true });
+    }
+    celebrateTaskDone(taskData.description, pts);
+  } else {
+    await taskRef.update({ done: true, pendingApproval: true });
+    await createNotification(createdBy, 'task_validation', `${currentUser.displayName.split(' ')[0]} concluiu "${taskData.description}" — valide para liberar os pontos`, taskId);
+    showToast('Aguardando validação de quem criou ⏳');
+  }
+
   await loadTasks();
   loadRewards();
+  renderStatsGrid();
+}
+
+async function approveTask(taskId) {
+  const taskRef = db.collection('households').doc(householdId).collection('tasks').doc(taskId);
+  const taskDoc = await taskRef.get();
+  const taskData = taskDoc.data();
+  if (!taskData || taskData.pointsAwarded) return;
+
+  const pts = taskData.points || POINTS.task;
+  await awardPoints(pts, 'task', taskData.description, '✅', taskData.assignedTo);
+  await taskRef.update({ pointsAwarded: true, pendingApproval: false });
+  showToast('✅ Tarefa validada!');
+  await loadTasks();
+  loadRewards();
+  loadNotifications();
+  renderStatsGrid();
+  closeNotificationsPanel();
+}
+
+async function rejectTask(taskId) {
+  const taskRef = db.collection('households').doc(householdId).collection('tasks').doc(taskId);
+  await taskRef.update({ done: false, pendingApproval: false });
+  showToast('Tarefa devolvida como pendente');
+  await loadTasks();
+  loadNotifications();
+  closeNotificationsPanel();
+}
+
+async function deleteTask(taskId) {
+  const taskRef = db.collection('households').doc(householdId).collection('tasks').doc(taskId);
+  const taskDoc = await taskRef.get();
+  const taskData = taskDoc.data();
+  if (!taskData || taskData.createdBy !== currentUser.uid) {
+    showToast('Só quem criou pode excluir');
+    return;
+  }
+  if (!confirm(`Excluir a tarefa "${taskData.description}"?`)) return;
+  await taskRef.delete();
+  showToast('🗑️ Tarefa excluída');
+  await loadTasks();
   renderStatsGrid();
 }
 
@@ -1197,9 +1436,12 @@ async function saveTask() {
   await db.collection('households').doc(householdId).collection('tasks').add({
     description: desc,
     assignedTo: who,
+    createdBy: currentUser.uid,
     due: due || null,
     points: selectedTaskPoints,
     done: false,
+    pendingApproval: false,
+    pointsAwarded: false,
     createdAt: new Date()
   });
 
@@ -1364,10 +1606,10 @@ function renderHomeEvents() {
   }).join('');
 }
 
-async function awardPoints(points, type, label, icon) {
+async function awardPoints(points, type, label, icon, forUserId) {
   await db.collection('households').doc(householdId).collection('points').add({
     points, type, label, icon,
-    userId: currentUser.uid,
+    userId: forUserId || currentUser.uid,
     createdAt: new Date()
   });
 }
@@ -1529,9 +1771,15 @@ function closeReward() {
   document.getElementById('overlay-dim').classList.remove('show');
   const popup = document.getElementById('reward-popup');
   popup.classList.remove('show');
+  popup.style.animation = 'none';
   popup.style.opacity = '0';
   popup.style.transform = 'translate(-50%,-50%) scale(0)';
-  setTimeout(() => { popup.style.opacity = ''; popup.style.transform = ''; }, 100);
+  void popup.offsetWidth;
+  setTimeout(() => {
+    popup.style.animation = '';
+    popup.style.opacity = '';
+    popup.style.transform = '';
+  }, 150);
 }
 
 function showToast(msg) {
