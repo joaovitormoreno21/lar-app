@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recompensas — Lar</title>
+<title>Lar — Gestão do Casal</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -14,48 +14,130 @@
   --yellow:#FBBF24;--yellow-l:#FEF3C7;
   --purple:#A855F7;--purple-l:#F3E8FF;
   --orange:#FB923C;--orange-l:#FFEDD5;
+  --red:#EF4444;--red-l:#FEE2E2;
   --ink:#0F172A;--ink-mid:#475569;--ink-light:#94A3B8;
   --border:#E2E8F0;--bg:#F0F7FF;--white:#fff;
 }
-body{font-family:'Nunito',sans-serif;background:#CBD5E1;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px 40px;}
+html,body{height:100%;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);}
 
-.phone{width:390px;min-height:844px;background:var(--bg);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 0 0 10px #1E293B,0 0 0 12px #334155,0 40px 80px rgba(0,0,0,0.4);display:flex;flex-direction:column;}
-.status-bar{background:var(--white);padding:14px 28px 10px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;color:var(--ink);flex-shrink:0;}
-.status-time{font-size:16px;font-weight:900;}
+#app{width:100%;max-width:600px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--bg);position:relative;display:flex;flex-direction:column;}
 
-.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:100px;}
-.screen::-webkit-scrollbar{display:none;}
+/* ── Login screen ── */
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:40px 20px;}
+.login-logo{font-size:56px;margin-bottom:16px;}
+.login-title{font-size:28px;font-weight:900;color:var(--ink);text-align:center;margin-bottom:8px;}
+.login-sub{font-size:14px;color:var(--ink-light);text-align:center;margin-bottom:40px;font-weight:600;}
+.login-btn{background:var(--blue);color:white;border:none;border-radius:14px;padding:16px 32px;font-size:16px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 0 var(--blue-d);transition:transform 0.1s,box-shadow 0.1s;display:flex;align-items:center;gap:10px;}
+.login-btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--blue-d);}
+.login-icon{font-size:20px;}
+.error-msg{background:var(--red-l);border:2px solid #FCA5A5;color:#991B1B;padding:14px;border-radius:10px;margin-top:20px;font-size:13px;font-weight:700;max-width:320px;text-align:center;}
 
-/* Header */
-.hdr{background:var(--white);padding:16px 20px 14px;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+/* ── Loading ── */
+#loading-screen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;gap:20px;}
+.spinner{width:40px;height:40px;border:4px solid var(--blue-l);border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── App shell ── */
+#app-shell{display:none;flex-direction:column;flex:1;min-height:100vh;min-height:100dvh;}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:90px;}
+
+.panel{display:none;}
+.panel.active{display:block;}
+
+.hdr{background:var(--white);padding:16px 20px 14px;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
 .hdr-title{font-size:20px;font-weight:900;color:var(--ink);}
+.hdr-right{display:flex;align-items:center;gap:10px;}
 .av-pair{display:flex;}
-.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:white;border:2px solid white;}
-.av-j{background:var(--blue);box-shadow:0 2px 0 var(--blue-d);}
-.av-a{background:var(--pink);margin-left:-8px;box-shadow:0 2px 0 var(--pink-d);}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:white;border:2px solid white;flex-shrink:0;}
+.logout-btn{width:36px;height:36px;border-radius:12px;background:var(--blue-l);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
 
-/* ── HERO XP ── */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;background:var(--white);border-top:2px solid var(--border);display:flex;padding:10px 8px calc(10px + env(safe-area-inset-bottom));z-index:50;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border-radius:12px;cursor:pointer;border:none;background:transparent;font-family:'Nunito',sans-serif;transition:background 0.15s;}
+.nav-item.active{background:var(--blue-l);}
+.nav-icon{font-size:22px;line-height:1;}
+.nav-label{font-size:10px;font-weight:800;color:var(--ink-light);}
+.nav-item.active .nav-label{color:var(--blue);}
+
+.greeting{margin:16px 16px 14px;border-radius:20px;background:var(--blue);padding:20px;position:relative;overflow:hidden;box-shadow:0 4px 0 var(--blue-d);}
+.greeting-emoji{position:absolute;right:-10px;top:-10px;font-size:80px;opacity:0.12;line-height:1;}
+.greeting h2{font-size:18px;font-weight:900;color:white;margin-bottom:4px;}
+.greeting p{font-size:13px;font-weight:600;color:rgba(255,255,255,0.82);}
+
+.card{background:var(--white);border-radius:18px;border:2px solid var(--border);padding:18px 20px;margin:0 16px 16px;}
+.card-title{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.empty-state{font-size:13px;color:var(--ink-light);text-align:center;padding:20px;font-weight:600;}
+
+.exp-row,.task-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:2px dashed #F1F5F9;}
+.exp-row:last-child,.task-row:last-child{border:none;}
+.exp-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--blue-l);}
+.exp-info{flex:1;min-width:0;}
+.exp-name{font-size:14px;font-weight:800;color:var(--ink);}
+.exp-meta{font-size:11px;font-weight:600;color:var(--ink-light);margin-top:1px;}
+.exp-right{text-align:right;flex-shrink:0;}
+.exp-val{font-size:15px;font-weight:900;color:var(--ink);}
+.who-pill{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin-top:3px;background:var(--blue-l);color:var(--blue-d);}
+
+.t-chk{width:26px;height:26px;border-radius:8px;border:3px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.15s;background:white;}
+.t-chk.done{background:var(--green);border-color:var(--green);color:white;}
+.t-name{font-size:14px;font-weight:700;color:var(--ink);}
+.t-name.done{text-decoration:line-through;color:var(--ink-light);}
+.t-meta{font-size:11px;font-weight:700;margin-top:2px;color:var(--ink-light);}
+
+.fab{position:fixed;bottom:90px;left:50%;transform:translateX(calc(-50% + 252px));width:52px;height:52px;border-radius:18px;background:var(--blue);color:white;border:none;font-size:26px;font-weight:300;cursor:pointer;z-index:40;box-shadow:0 4px 0 var(--blue-d);display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;}
+.fab:active{transform:translateX(calc(-50% + 252px)) translateY(3px);box-shadow:0 1px 0 var(--blue-d);}
+@media (max-width:600px){.fab{transform:translateX(0);right:20px;left:auto;}.fab:active{transform:translateY(3px);}}
+
+.modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,0.55);z-index:100;align-items:flex-end;justify-content:center;}
+.modal.open{display:flex;}
+.modal-sheet{background:white;width:100%;max-width:600px;border-radius:28px 28px 0 0;padding:20px 20px calc(36px + env(safe-area-inset-bottom));animation:slideUp 0.25s cubic-bezier(0.34,1.4,0.64,1);max-height:85vh;overflow-y:auto;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;border-radius:4px;background:var(--border);margin:0 auto 18px;}
+.modal-title{font-size:20px;font-weight:900;color:var(--ink);margin-bottom:18px;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:11px;font-weight:800;color:var(--ink-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;}
+.field input,.field select{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--ink);background:white;outline:none;}
+.field input:focus,.field select:focus{border-color:var(--blue);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-save{width:100%;padding:16px;border-radius:14px;background:var(--blue);color:white;border:none;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 var(--blue-d);margin-top:16px;}
+.btn-save:active{transform:translateY(3px);box-shadow:0 1px 0 var(--blue-d);}
+.btn-cancel{width:100%;padding:14px;border-radius:14px;background:var(--white);color:var(--ink-mid);border:2px solid var(--border);font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px;}
+
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-20px);width:calc(100% - 40px);max-width:560px;background:var(--ink);color:white;padding:14px 18px;border-radius:14px;font-size:14px;font-weight:800;z-index:200;display:flex;align-items:center;gap:10px;opacity:0;transition:all 0.3s cubic-bezier(0.34,1.4,0.64,1);pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* ── Família ── */
+.member-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:2px dashed #F1F5F9;}
+.member-row:last-child{border:none;}
+.member-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:white;flex-shrink:0;}
+.member-info{flex:1;min-width:0;}
+.member-name{font-size:14px;font-weight:800;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.member-email{font-size:11px;font-weight:600;color:var(--ink-light);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.member-you{font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;background:var(--green-l);color:var(--green-d);flex-shrink:0;}
+.invite-code-box{background:var(--blue-l);border-radius:14px;padding:16px;text-align:center;margin-bottom:16px;}
+.invite-code-label{font-size:11px;font-weight:800;color:var(--blue-d);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;}
+.invite-code{font-size:28px;font-weight:900;color:var(--blue-d);letter-spacing:4px;margin-bottom:10px;}
+.copy-btn{background:var(--blue);color:white;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
+
+/* ── RECOMPENSAS ── */
 .xp-hero{margin:16px;background:var(--blue);border-radius:24px;padding:20px;box-shadow:0 4px 0 var(--blue-d);position:relative;overflow:hidden;}
 .xp-bg-circle{position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.07);right:-40px;top:-40px;}
 .xp-bg-circle2{position:absolute;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.05);right:60px;bottom:-30px;}
 .xp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.xp-level{display:flex;align-items:center;gap:8px;}
 .level-badge{background:rgba(255,255,255,0.2);border-radius:20px;padding:5px 12px;font-size:13px;font-weight:900;color:white;}
 .xp-streak{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:800;color:rgba(255,255,255,0.9);}
 .xp-pts-row{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:10px;}
 .xp-pts-big{font-size:38px;font-weight:900;color:white;letter-spacing:-1px;line-height:1;}
 .xp-pts-lbl{font-size:12px;color:rgba(255,255,255,0.7);font-weight:700;margin-bottom:4px;}
-.xp-next{font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);}
+.xp-next{font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);text-align:right;}
 .xp-bar-bg{background:rgba(255,255,255,0.2);border-radius:20px;height:12px;overflow:hidden;}
 .xp-bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--yellow),#FFF);transition:width 0.8s cubic-bezier(0.34,1.4,0.64,1);}
 
-/* ── CONQUISTADORES ── */
 .sec{padding:0 16px;margin-bottom:4px;}
 .sec-title{font-size:15px;font-weight:900;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
 
 .badges-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-bottom:16px;}
-.badge-card{background:var(--white);border-radius:18px;border:2px solid var(--border);padding:16px;text-align:center;transition:transform 0.15s;}
-.badge-card:active{transform:scale(0.97);}
+.badge-card{background:var(--white);border-radius:18px;border:2px solid var(--border);padding:16px;text-align:center;}
 .badge-card.locked{opacity:0.45;filter:grayscale(0.6);}
 .badge-icon{font-size:40px;margin-bottom:8px;display:block;line-height:1;}
 .badge-name{font-size:13px;font-weight:800;color:var(--ink);margin-bottom:3px;}
@@ -65,51 +147,44 @@ body{font-family:'Nunito',sans-serif;background:#CBD5E1;min-height:100vh;display
 .badge-card.locked .badge-pts{background:var(--border);color:var(--ink-light);}
 .badge-unlocked-tag{display:inline-block;font-size:10px;font-weight:900;padding:3px 8px;border-radius:20px;background:var(--green-l);color:var(--green-d);margin-bottom:6px;}
 
-/* ── RANKING ── */
 .ranking{padding:0 16px;margin-bottom:16px;}
 .rank-card{background:var(--white);border-radius:18px;border:2px solid var(--border);overflow:hidden;}
 .rank-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:2px dashed #F1F5F9;}
 .rank-row:last-child{border:none;}
 .rank-pos{font-size:20px;font-weight:900;width:28px;text-align:center;flex-shrink:0;}
 .rank-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900;color:white;flex-shrink:0;}
-.rank-info{flex:1;}
+.rank-info{flex:1;min-width:0;}
 .rank-name{font-size:14px;font-weight:800;color:var(--ink);}
 .rank-tasks{font-size:12px;font-weight:700;color:var(--ink-light);margin-top:1px;}
-.rank-pts{text-align:right;}
+.rank-pts{text-align:right;flex-shrink:0;}
 .rank-pts-val{font-size:16px;font-weight:900;color:var(--blue);}
 .rank-pts-lbl{font-size:10px;font-weight:700;color:var(--ink-light);}
 
-/* ── HISTÓRICO ── */
 .history{padding:0 16px;margin-bottom:16px;}
 .hist-item{background:var(--white);border-radius:14px;border:2px solid var(--border);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
 .hist-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.hist-info{flex:1;}
+.hist-info{flex:1;min-width:0;}
 .hist-name{font-size:13px;font-weight:800;color:var(--ink);}
 .hist-when{font-size:11px;font-weight:600;color:var(--ink-light);margin-top:1px;}
-.hist-pts{font-size:14px;font-weight:900;color:var(--green-d);white-space:nowrap;}
+.hist-pts{font-size:14px;font-weight:900;color:var(--green-d);white-space:nowrap;flex-shrink:0;}
 
-/* ── BOTTOM NAV ── */
-.bottom-nav{position:absolute;bottom:0;left:0;right:0;background:var(--white);border-top:2px solid var(--border);display:flex;padding:10px 8px 20px;z-index:50;}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border-radius:12px;cursor:pointer;border:none;background:transparent;font-family:'Nunito',sans-serif;transition:background 0.15s;}
-.nav-item.active{background:var(--blue-l);}
-.nav-icon{font-size:22px;line-height:1;}
-.nav-label{font-size:10px;font-weight:800;color:var(--ink-light);}
-.nav-item.active .nav-label{color:var(--blue);}
-
-/* ── TASK COMPLETE ANIMATION OVERLAY ── */
-.anim-overlay{position:absolute;inset:0;z-index:200;pointer-events:none;overflow:hidden;}
+/* ── Animação de conclusão ── */
+.anim-overlay{position:fixed;inset:0;z-index:300;pointer-events:none;overflow:hidden;}
 .confetti-piece{position:absolute;width:10px;height:10px;border-radius:2px;opacity:0;}
+.star-burst{position:absolute;font-size:22px;opacity:0;pointer-events:none;}
+.overlay-dim{position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:305;pointer-events:all;display:none;}
+.overlay-dim.show{display:block;}
 .reward-popup{
-  position:absolute;left:50%;top:50%;
+  position:fixed;left:50%;top:50%;
   transform:translate(-50%,-50%) scale(0);
   background:var(--white);border-radius:28px;
   border:3px solid var(--border);
   padding:28px 32px;text-align:center;
   box-shadow:0 20px 60px rgba(59,130,246,0.25);
-  z-index:210;opacity:0;
-  pointer-events:none;min-width:280px;
+  z-index:310;opacity:0;
+  pointer-events:none;width:calc(100% - 60px);max-width:320px;
 }
-.reward-popup.show{animation:popReward 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;}
+.reward-popup.show{animation:popReward 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;pointer-events:all;}
 @keyframes popReward{
   0%{transform:translate(-50%,-50%) scale(0);opacity:0}
   60%{transform:translate(-50%,-50%) scale(1.06);opacity:1}
@@ -121,310 +196,731 @@ body{font-family:'Nunito',sans-serif;background:#CBD5E1;min-height:100vh;display
 .r-sub{font-size:14px;font-weight:700;color:var(--ink-light);margin-bottom:16px;}
 .r-pts-badge{display:inline-block;background:var(--yellow-l);border:2px solid var(--yellow);border-radius:20px;padding:8px 20px;font-size:20px;font-weight:900;color:#92400E;margin-bottom:20px;animation:pulsePts 0.4s 0.8s ease both;}
 @keyframes pulsePts{0%{transform:scale(0.8)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
-.r-close-btn{
-  background:var(--blue);color:white;border:none;
-  border-radius:14px;padding:14px 28px;
-  font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;
-  cursor:pointer;width:100%;box-shadow:0 4px 0 var(--blue-d);
-  pointer-events:all;transition:transform 0.1s;
-}
+.r-close-btn{background:var(--blue);color:white;border:none;border-radius:14px;padding:14px 28px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;width:100%;box-shadow:0 4px 0 var(--blue-d);}
 .r-close-btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--blue-d);}
-.overlay-dim{position:absolute;inset:0;background:rgba(15,23,42,0.5);z-index:205;pointer-events:all;}
-
-/* ── DEMO TASK BUTTON ── */
-.demo-wrap{padding:0 16px;margin-bottom:16px;}
-.demo-task{
-  background:var(--white);border-radius:18px;border:2px solid var(--border);
-  padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;
-  transition:transform 0.12s,box-shadow 0.12s;
-}
-.demo-task:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(59,130,246,0.12);}
-.demo-chk{
-  width:30px;height:30px;border-radius:9px;
-  border:3px solid var(--border);flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;transition:all 0.2s;background:white;
-}
-.demo-chk.done{background:var(--green);border-color:var(--green);color:white;}
-.demo-info{flex:1;}
-.demo-name{font-size:15px;font-weight:800;color:var(--ink);}
-.demo-meta{font-size:12px;font-weight:700;color:var(--ink-light);margin-top:2px;}
-.demo-pts-preview{font-size:12px;font-weight:800;color:var(--yellow);background:var(--yellow-l);padding:4px 10px;border-radius:20px;white-space:nowrap;}
-.tap-hint{font-size:12px;font-weight:700;color:var(--ink-light);text-align:center;margin-top:8px;animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:0.5}50%{opacity:1}}
-
-/* Stars burst */
-.star-burst{position:absolute;font-size:22px;opacity:0;pointer-events:none;}
 </style>
 </head>
 <body>
-<div class="phone" id="phone">
-  <div class="status-bar">
-    <div class="status-time">21:34</div>
-    <div style="font-size:13px;font-weight:700;">📶 🔋</div>
+
+<div id="app">
+
+  <!-- LOGIN -->
+  <div id="login-screen">
+    <div class="login-logo">🏠</div>
+    <div class="login-title">Lar</div>
+    <div class="login-sub">Gestão do casal</div>
+    <button class="login-btn" onclick="loginWithGoogle()">
+      <span class="login-icon">🔐</span>
+      Entrar com Google
+    </button>
+    <div id="login-error" class="error-msg" style="display:none;"></div>
   </div>
 
-  <div class="screen">
-    <div class="hdr">
-      <div class="hdr-title">⭐ Recompensas</div>
-      <div class="av-pair">
-        <div class="av av-j">J</div>
-        <div class="av av-a">A</div>
-      </div>
-    </div>
-
-    <!-- XP Hero -->
-    <div class="xp-hero">
-      <div class="xp-bg-circle"></div>
-      <div class="xp-bg-circle2"></div>
-      <div class="xp-top">
-        <div class="xp-level">
-          <span class="level-badge">🏆 Nível 4</span>
-        </div>
-        <div class="xp-streak">🔥 5 dias</div>
-      </div>
-      <div class="xp-pts-row">
-        <div>
-          <div class="xp-pts-big" id="xp-display">650</div>
-          <div class="xp-pts-lbl">pontos do casal</div>
-        </div>
-        <div class="xp-next">350 pts<br>pro nível 5</div>
-      </div>
-      <div class="xp-bar-bg">
-        <div class="xp-bar-fill" id="xp-bar" style="width:65%"></div>
-      </div>
-    </div>
-
-    <!-- DEMO: Tarefa interativa -->
-    <div class="sec"><div class="sec-title">🎮 Experimente!</div></div>
-    <div class="demo-wrap">
-      <div class="demo-task" id="demo-task" onclick="completeTask()">
-        <div class="demo-chk" id="demo-chk"></div>
-        <div class="demo-info">
-          <div class="demo-name" id="demo-task-name">Fazer o mercado</div>
-          <div class="demo-meta" id="demo-task-meta">João · pendente — toque para completar!</div>
-        </div>
-        <div class="demo-pts-preview">+50 pts</div>
-      </div>
-      <div class="tap-hint" id="tap-hint">👆 Toque na tarefa para ver a animação</div>
-    </div>
-
-    <!-- Ranking -->
-    <div class="sec"><div class="sec-title">🏅 Ranking do lar</div></div>
-    <div class="ranking">
-      <div class="rank-card">
-        <div class="rank-row">
-          <div class="rank-pos">🥇</div>
-          <div class="rank-av" style="background:var(--blue);box-shadow:0 2px 0 var(--blue-d);">J</div>
-          <div class="rank-info">
-            <div class="rank-name">João</div>
-            <div class="rank-tasks">12 tarefas concluídas</div>
-          </div>
-          <div class="rank-pts">
-            <div class="rank-pts-val" id="joao-pts">650</div>
-            <div class="rank-pts-lbl">pontos</div>
-          </div>
-        </div>
-        <div class="rank-row">
-          <div class="rank-pos">🥈</div>
-          <div class="rank-av" style="background:var(--pink);box-shadow:0 2px 0 var(--pink-d);">A</div>
-          <div class="rank-info">
-            <div class="rank-name">Ana</div>
-            <div class="rank-tasks">9 tarefas concluídas</div>
-          </div>
-          <div class="rank-pts">
-            <div class="rank-pts-val">480</div>
-            <div class="rank-pts-lbl">pontos</div>
-          </div>
-        </div>
-        <div class="rank-row">
-          <div class="rank-pos">🥉</div>
-          <div class="rank-av" style="background:var(--purple);box-shadow:0 2px 0 #7E22CE;">C</div>
-          <div class="rank-info">
-            <div class="rank-name">Caio</div>
-            <div class="rank-tasks">7 tarefas concluídas</div>
-          </div>
-          <div class="rank-pts">
-            <div class="rank-pts-val">390</div>
-            <div class="rank-pts-lbl">pontos</div>
-          </div>
-        </div>
-        <div class="rank-row">
-          <div class="rank-pos" style="font-size:14px;font-weight:800;color:var(--ink-light);">4</div>
-          <div class="rank-av" style="background:var(--orange);box-shadow:0 2px 0 #C2410C;">M</div>
-          <div class="rank-info">
-            <div class="rank-name">Marina</div>
-            <div class="rank-tasks">6 tarefas concluídas</div>
-          </div>
-          <div class="rank-pts">
-            <div class="rank-pts-val">310</div>
-            <div class="rank-pts-lbl">pontos</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Conquistas -->
-    <div class="sec"><div class="sec-title">🎖️ Conquistas</div></div>
-    <div class="badges-grid">
-      <div class="badge-card">
-        <span class="badge-unlocked-tag">✓ Conquistado</span>
-        <span class="badge-icon">🧹</span>
-        <div class="badge-name">Casa limpa</div>
-        <div class="badge-desc">5 tarefas de casa em 1 semana</div>
-        <span class="badge-pts">+100 pts</span>
-      </div>
-      <div class="badge-card">
-        <span class="badge-unlocked-tag">✓ Conquistado</span>
-        <span class="badge-icon">💰</span>
-        <div class="badge-name">Poupador</div>
-        <div class="badge-desc">Registrou gastos por 7 dias seguidos</div>
-        <span class="badge-pts">+80 pts</span>
-      </div>
-      <div class="badge-card">
-        <span class="badge-unlocked-tag">✓ Conquistado</span>
-        <span class="badge-icon">🔥</span>
-        <div class="badge-name">Sequência</div>
-        <div class="badge-desc">5 dias usando o app juntos</div>
-        <span class="badge-pts">+50 pts</span>
-      </div>
-      <div class="badge-card locked">
-        <span class="badge-icon">🌟</span>
-        <div class="badge-name">Super casal</div>
-        <div class="badge-desc">30 tarefas em um mês</div>
-        <span class="badge-pts">🔒 +200 pts</span>
-      </div>
-      <div class="badge-card locked">
-        <span class="badge-icon">✈️</span>
-        <div class="badge-name">Viajantes</div>
-        <div class="badge-desc">Planejaram uma viagem juntos</div>
-        <span class="badge-pts">🔒 +150 pts</span>
-      </div>
-      <div class="badge-card locked">
-        <span class="badge-icon">💎</span>
-        <div class="badge-name">Nível 10</div>
-        <div class="badge-desc">Atinja o nível máximo</div>
-        <span class="badge-pts">🔒 +500 pts</span>
-      </div>
-    </div>
-
-    <!-- Histórico -->
-    <div class="sec"><div class="sec-title">📜 Histórico de pontos</div></div>
-    <div class="history">
-      <div class="hist-item">
-        <div class="hist-icon" style="background:var(--green-l)">✅</div>
-        <div class="hist-info">
-          <div class="hist-name">Pagar conta de água</div>
-          <div class="hist-when">João · hoje, 18h42</div>
-        </div>
-        <div class="hist-pts">+50 pts</div>
-      </div>
-      <div class="hist-item">
-        <div class="hist-icon" style="background:var(--blue-l)">📅</div>
-        <div class="hist-info">
-          <div class="hist-name">Evento criado no calendário</div>
-          <div class="hist-when">Ana · hoje, 14h15</div>
-        </div>
-        <div class="hist-pts">+10 pts</div>
-      </div>
-      <div class="hist-item">
-        <div class="hist-icon" style="background:var(--yellow-l)">🔥</div>
-        <div class="hist-info">
-          <div class="hist-name">Bônus de sequência — 5 dias!</div>
-          <div class="hist-when">Casal · ontem</div>
-        </div>
-        <div class="hist-pts">+50 pts</div>
-      </div>
-      <div class="hist-item">
-        <div class="hist-icon" style="background:var(--pink-l)">🧹</div>
-        <div class="hist-info">
-          <div class="hist-name">Limpar garagem</div>
-          <div class="hist-when">João · 12 jun</div>
-        </div>
-        <div class="hist-pts">+50 pts</div>
-      </div>
-      <div class="hist-item">
-        <div class="hist-icon" style="background:var(--purple-l)">🎖️</div>
-        <div class="hist-info">
-          <div class="hist-name">Conquista: Casa limpa!</div>
-          <div class="hist-when">Casal · 11 jun</div>
-        </div>
-        <div class="hist-pts">+100 pts</div>
-      </div>
-    </div>
-
-  </div><!-- /screen -->
-
-  <!-- Bottom Nav -->
-  <div class="bottom-nav">
-    <button class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Início</div></button>
-    <button class="nav-item"><div class="nav-icon">💰</div><div class="nav-label">Finanças</div></button>
-    <button class="nav-item"><div class="nav-icon">✅</div><div class="nav-label">Tarefas</div></button>
-    <button class="nav-item"><div class="nav-icon">📅</div><div class="nav-label">Agenda</div></button>
-    <button class="nav-item active"><div class="nav-icon">⭐</div><div class="nav-label">Recompensas</div></button>
+  <!-- LOADING -->
+  <div id="loading-screen">
+    <div class="spinner"></div>
+    <div style="font-size:14px;font-weight:700;color:var(--ink);">Carregando...</div>
   </div>
 
-  <!-- Animation overlay -->
+  <!-- APP SHELL -->
+  <div id="app-shell">
+    <div class="screen" id="screen">
+
+      <!-- INÍCIO -->
+      <div id="p-home" class="panel active">
+        <div class="hdr">
+          <div class="hdr-title">🏠 Início</div>
+          <div class="hdr-right">
+            <button class="logout-btn" onclick="logout()" title="Sair">🚪</button>
+            <div class="av-pair" id="home-avatars"></div>
+          </div>
+        </div>
+        <div class="greeting">
+          <div class="greeting-emoji">💑</div>
+          <h2 id="greeting-name">Olá!</h2>
+          <p id="greeting-sub">Bem-vindo ao Lar</p>
+        </div>
+        <div class="card">
+          <div class="card-title">💳 Últimos gastos</div>
+          <div id="home-expenses"><div class="empty-state">Nenhum gasto ainda</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">📝 Tarefas</div>
+          <div id="home-tasks"><div class="empty-state">Sem tarefas</div></div>
+        </div>
+      </div>
+
+      <!-- FINANÇAS -->
+      <div id="p-financas" class="panel">
+        <div class="hdr">
+          <div class="hdr-title">💰 Finanças</div>
+          <div class="av-pair" id="fin-avatars"></div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:12px;color:var(--ink-light);font-weight:700;">Total do mês</div>
+          <div style="font-size:28px;font-weight:900;color:var(--blue);margin:6px 0;">R$ <span id="total-month">0,00</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Lançamentos</div>
+          <div id="finance-list"><div class="empty-state">Nenhum lançamento</div></div>
+        </div>
+      </div>
+
+      <!-- TAREFAS -->
+      <div id="p-tarefas" class="panel">
+        <div class="hdr">
+          <div class="hdr-title">✅ Tarefas</div>
+          <div class="av-pair" id="task-avatars"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Todas as tarefas</div>
+          <div id="tasks-list"><div class="empty-state">Sem tarefas</div></div>
+        </div>
+      </div>
+
+      <!-- RECOMPENSAS -->
+      <div id="p-recompensas" class="panel">
+        <div class="hdr">
+          <div class="hdr-title">⭐ Recompensas</div>
+          <div class="av-pair" id="rew-avatars"></div>
+        </div>
+
+        <div class="xp-hero">
+          <div class="xp-bg-circle"></div>
+          <div class="xp-bg-circle2"></div>
+          <div class="xp-top">
+            <span class="level-badge" id="level-badge">🏆 Nível 1</span>
+            <div class="xp-streak" id="streak-badge">🔥 0 dias</div>
+          </div>
+          <div class="xp-pts-row">
+            <div>
+              <div class="xp-pts-big" id="xp-display">0</div>
+              <div class="xp-pts-lbl">pontos do lar</div>
+            </div>
+            <div class="xp-next" id="xp-next-lbl">100 pts<br>pro nível 2</div>
+          </div>
+          <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="sec"><div class="sec-title">🏅 Ranking do lar</div></div>
+        <div class="ranking"><div class="rank-card" id="rank-list"></div></div>
+
+        <div class="sec"><div class="sec-title">🎖️ Conquistas</div></div>
+        <div class="badges-grid" id="badges-grid"></div>
+
+        <div class="sec"><div class="sec-title">📜 Histórico de pontos</div></div>
+        <div class="history" id="history-list"></div>
+      </div>
+
+      <!-- FAMÍLIA -->
+      <div id="p-familia" class="panel">
+        <div class="hdr">
+          <div class="hdr-title">👨‍👩‍👧 Família</div>
+        </div>
+        <div class="card">
+          <div class="invite-code-box">
+            <div class="invite-code-label">Código de convite do seu lar</div>
+            <div class="invite-code" id="invite-code">------</div>
+            <button class="copy-btn" onclick="copyInviteCode()">Copiar código</button>
+          </div>
+          <div style="font-size:12px;color:var(--ink-light);font-weight:600;text-align:center;">
+            Compartilhe este código com seu parceiro(a) para conectar as contas e compartilhar os dados
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Membros do lar</div>
+          <div id="members-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Entrar em outro lar</div>
+          <div class="field">
+            <label>Código de convite</label>
+            <input type="text" id="join-code" placeholder="Ex: ABC123" style="text-transform:uppercase;">
+          </div>
+          <button class="btn-save" onclick="joinHousehold()">Conectar ao lar</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <button class="nav-item active" id="nav-home" onclick="nav('home')">
+        <div class="nav-icon">🏠</div><div class="nav-label">Início</div>
+      </button>
+      <button class="nav-item" id="nav-financas" onclick="nav('financas')">
+        <div class="nav-icon">💰</div><div class="nav-label">Finanças</div>
+      </button>
+      <button class="nav-item" id="nav-tarefas" onclick="nav('tarefas')">
+        <div class="nav-icon">✅</div><div class="nav-label">Tarefas</div>
+      </button>
+      <button class="nav-item" id="nav-recompensas" onclick="nav('recompensas')">
+        <div class="nav-icon">⭐</div><div class="nav-label">Pontos</div>
+      </button>
+      <button class="nav-item" id="nav-familia" onclick="nav('familia')">
+        <div class="nav-icon">👨‍👩‍👧</div><div class="nav-label">Família</div>
+      </button>
+    </div>
+
+    <!-- FAB -->
+    <button class="fab" id="fab" onclick="openModal()">+</button>
+  </div>
+
+  <!-- MODAL: novo gasto -->
+  <div class="modal" id="modal-gasto">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">💸 Novo gasto</div>
+      <div class="field">
+        <label>Descrição</label>
+        <input type="text" id="f-desc" placeholder="Ex: Supermercado, Aluguel…">
+      </div>
+      <div class="field">
+        <label>Valor (R$)</label>
+        <input type="number" id="f-val" placeholder="0,00" min="0" step="0.01">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Categoria</label>
+          <select id="f-cat">
+            <option>Alimentação</option><option>Casa</option><option>Transporte</option>
+            <option>Saúde</option><option>Lazer</option><option>Outro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Pagamento</label>
+          <select id="f-pay">
+            <option>Crédito</option><option>Débito</option><option>Pix</option><option>Dinheiro</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-save" onclick="saveExpense()">Salvar</button>
+      <button class="btn-cancel" onclick="closeModal('modal-gasto')">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: nova tarefa -->
+  <div class="modal" id="modal-tarefa">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">📝 Nova tarefa</div>
+      <div class="field">
+        <label>O que precisa ser feito?</label>
+        <input type="text" id="t-desc" placeholder="Ex: Pagar conta de luz">
+      </div>
+      <div class="field">
+        <label>Responsável</label>
+        <select id="t-who"></select>
+      </div>
+      <button class="btn-save" onclick="saveTask()">Salvar</button>
+      <button class="btn-cancel" onclick="closeModal('modal-tarefa')">Cancelar</button>
+    </div>
+  </div>
+
   <div class="anim-overlay" id="anim-overlay"></div>
-  <div class="overlay-dim" id="overlay-dim" style="display:none;" onclick="closeReward()"></div>
+  <div class="overlay-dim" id="overlay-dim" onclick="closeReward()"></div>
   <div class="reward-popup" id="reward-popup">
     <span class="r-emoji" id="r-emoji">🎉</span>
     <div class="r-title" id="r-title">Tarefa concluída!</div>
-    <div class="r-sub" id="r-sub">Fazer o mercado</div>
-    <div class="r-pts-badge" id="r-pts">+50 pontos! ⭐</div>
+    <div class="r-sub" id="r-sub"></div>
+    <div class="r-pts-badge" id="r-pts-badge">+10 pontos! ⭐</div>
     <button class="r-close-btn" onclick="closeReward()">Incrível! 🚀</button>
   </div>
 
-</div><!-- /phone -->
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 
 <script>
-let taskDone = false;
-let animRunning = false;
+const firebaseConfig = {
+  apiKey: "AIzaSyAdV1UmSC0Be-xgeCACTYXcEaLw-5FvWlE",
+  authDomain: "lar-app-2cb72.firebaseapp.com",
+  projectId: "lar-app-2cb72",
+  storageBucket: "lar-app-2cb72.firebasestorage.app",
+  messagingSenderId: "561839460040",
+  appId: "1:561839460040:web:8e9f564762fd74e4ec9ffd"
+};
 
-const COLORS = ['#3B82F6','#F472B6','#FBBF24','#34D399','#A855F7','#FB923C','#F87171','#60A5FA'];
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-function completeTask() {
-  if(taskDone || animRunning) return;
-  animRunning = true;
-  taskDone = true;
+let currentUser = null;
+let householdId = null;
+let householdMembers = [];
+let currentModalType = 'gasto';
 
-  const chk = document.getElementById('demo-chk');
-  const name = document.getElementById('demo-task-name');
-  const meta = document.getElementById('demo-task-meta');
-  const hint = document.getElementById('tap-hint');
+const AVATAR_COLORS = ['#3B82F6','#F472B6','#A855F7','#FB923C','#34D399','#FBBF24'];
+function colorForUid(uid){
+  let hash = 0;
+  for(let i=0;i<uid.length;i++){ hash = uid.charCodeAt(i) + ((hash<<5)-hash); }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
 
-  chk.classList.add('done');
-  chk.textContent = '✓';
-  name.style.textDecoration = 'line-through';
-  name.style.color = '#94A3B8';
-  meta.textContent = 'João · concluído agora!';
-  hint.style.display = 'none';
+const POINTS = { task: 50, expense: 10 };
+const POINTS_PER_LEVEL = 100;
+const BADGES = [
+  { id:'first_task', icon:'✅', name:'Primeira tarefa', desc:'Conclua sua primeira tarefa', need: t => t.tasksDone >= 1, pts:20 },
+  { id:'five_tasks', icon:'🧹', name:'Casa em dia', desc:'5 tarefas concluídas', need: t => t.tasksDone >= 5, pts:100 },
+  { id:'tracker', icon:'💰', name:'Organizado', desc:'5 gastos registrados', need: t => t.expensesCount >= 5, pts:80 },
+  { id:'super', icon:'🌟', name:'Super lar', desc:'30 tarefas concluídas', need: t => t.tasksDone >= 30, pts:200 },
+  { id:'lvl5', icon:'💎', name:'Nível 5', desc:'Alcance o nível 5', need: t => t.level >= 5, pts:150 },
+  { id:'lvl10', icon:'👑', name:'Nível 10', desc:'Alcance o nível máximo', need: t => t.level >= 10, pts:500 },
+];
 
+function showScreen(id) {
+  document.getElementById('login-screen').style.display = id === 'login' ? 'flex' : 'none';
+  document.getElementById('loading-screen').style.display = id === 'loading' ? 'flex' : 'none';
+  document.getElementById('app-shell').style.display = id === 'app' ? 'flex' : 'none';
+}
+
+showScreen('loading');
+
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    currentUser = user;
+    showScreen('loading');
+    try {
+      await setupHousehold();
+      renderGreeting();
+      await loadEverything();
+      showScreen('app');
+    } catch (err) {
+      console.error('Erro ao iniciar app:', err);
+      showScreen('login');
+      const box = document.getElementById('login-error');
+      box.textContent = 'Erro ao carregar dados: ' + err.message;
+      box.style.display = 'block';
+    }
+  } else {
+    currentUser = null;
+    householdId = null;
+    showScreen('login');
+  }
+});
+
+async function loginWithGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  const errorBox = document.getElementById('login-error');
+  errorBox.style.display = 'none';
+  try {
+    await auth.signInWithPopup(provider);
+  } catch (error) {
+    console.error('Erro de login:', error.code, error.message);
+    let msg = 'Erro ao fazer login (' + error.code + ')';
+    if (error.code === 'auth/unauthorized-domain') {
+      msg = 'Este domínio não está autorizado no Firebase. Vá em Authentication → Settings → Authorized domains.';
+    } else if (error.code === 'auth/popup-blocked') {
+      msg = 'O navegador bloqueou o pop-up de login. Permita pop-ups e tente novamente.';
+    } else if (error.code === 'auth/popup-closed-by-user') {
+      msg = 'Login cancelado.';
+    }
+    errorBox.textContent = msg;
+    errorBox.style.display = 'block';
+  }
+}
+
+function logout() {
+  if (confirm('Deseja sair?')) auth.signOut();
+}
+
+function generateInviteCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for(let i=0;i<6;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
+async function setupHousehold() {
+  const userRef = db.collection('users').doc(currentUser.uid);
+  const userDoc = await userRef.get();
+
+  if (userDoc.exists && userDoc.data().householdId) {
+    householdId = userDoc.data().householdId;
+  } else {
+    householdId = 'h_' + Math.random().toString(36).substr(2, 9);
+    const inviteCode = generateInviteCode();
+    await db.collection('households').doc(householdId).set({
+      createdAt: new Date(),
+      inviteCode: inviteCode,
+      memberIds: [currentUser.uid]
+    });
+    await userRef.set({
+      email: currentUser.email,
+      name: currentUser.displayName || 'Usuário',
+      photoURL: currentUser.photoURL || '',
+      householdId: householdId,
+      createdAt: new Date()
+    });
+  }
+
+  if (!userDoc.exists) {
+    await userRef.set({
+      email: currentUser.email,
+      name: currentUser.displayName || 'Usuário',
+      photoURL: currentUser.photoURL || '',
+      householdId: householdId,
+      createdAt: new Date()
+    }, { merge: true });
+  }
+
+  await loadHouseholdMembers();
+}
+
+async function loadHouseholdMembers() {
+  const hhDoc = await db.collection('households').doc(householdId).get();
+  const memberIds = hhDoc.data().memberIds || [];
+  document.getElementById('invite-code').textContent = hhDoc.data().inviteCode || '------';
+
+  householdMembers = [];
+  for (const uid of memberIds) {
+    const uDoc = await db.collection('users').doc(uid).get();
+    if (uDoc.exists) {
+      householdMembers.push({ uid, ...uDoc.data() });
+    }
+  }
+  renderMembers();
+  renderAvatars();
+  renderTaskWhoOptions();
+}
+
+function renderMembers() {
+  const list = document.getElementById('members-list');
+  list.innerHTML = householdMembers.map(m => `
+    <div class="member-row">
+      <div class="member-av" style="background:${colorForUid(m.uid)}">${(m.name||'?')[0].toUpperCase()}</div>
+      <div class="member-info">
+        <div class="member-name">${m.name}</div>
+        <div class="member-email">${m.email}</div>
+      </div>
+      ${m.uid === currentUser.uid ? '<span class="member-you">Você</span>' : ''}
+    </div>
+  `).join('');
+}
+
+function renderAvatars() {
+  const html = householdMembers.slice(0,3).map((m,i) => `
+    <div class="av" style="background:${colorForUid(m.uid)};margin-left:${i>0?'-8px':'0'}">${(m.name||'?')[0].toUpperCase()}</div>
+  `).join('');
+  ['home-avatars','fin-avatars','task-avatars','rew-avatars'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  });
+}
+
+function renderTaskWhoOptions() {
+  const sel = document.getElementById('t-who');
+  sel.innerHTML = householdMembers.map(m => `<option value="${m.uid}">${m.name}${m.uid===currentUser.uid?' (você)':''}</option>`).join('');
+}
+
+async function joinHousehold() {
+  const code = document.getElementById('join-code').value.trim().toUpperCase();
+  if (!code) return;
+
+  try {
+    const snap = await db.collection('households').where('inviteCode','==',code).limit(1).get();
+    if (snap.empty) {
+      showToast('Código não encontrado');
+      return;
+    }
+    const newHouseholdDoc = snap.docs[0];
+    const newHouseholdId = newHouseholdDoc.id;
+
+    if (newHouseholdId === householdId) {
+      showToast('Você já está neste lar');
+      return;
+    }
+
+    await db.collection('households').doc(newHouseholdId).update({
+      memberIds: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+    });
+    await db.collection('users').doc(currentUser.uid).update({
+      householdId: newHouseholdId
+    });
+
+    householdId = newHouseholdId;
+    document.getElementById('join-code').value = '';
+    showToast('Conectado ao novo lar!');
+    await loadHouseholdMembers();
+    await loadEverything();
+  } catch (err) {
+    console.error('Erro ao entrar no lar:', err);
+    showToast('Erro ao conectar: ' + err.message);
+  }
+}
+
+function copyInviteCode() {
+  const code = document.getElementById('invite-code').textContent;
+  navigator.clipboard.writeText(code).then(() => showToast('Código copiado!'));
+}
+
+function renderGreeting() {
+  const name = (currentUser.displayName || 'Usuário').split(' ')[0];
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
+  document.getElementById('greeting-name').textContent = `${greet}, ${name}!`;
+  document.getElementById('greeting-sub').textContent = householdMembers.length > 1
+    ? `Você e mais ${householdMembers.length - 1} pessoa(s) no lar`
+    : 'Convide seu parceiro(a) na aba Família';
+}
+
+async function loadEverything() {
+  await Promise.all([loadExpenses(), loadTasks(), loadRewards()]);
+}
+
+async function loadExpenses() {
+  const snap = await db.collection('households').doc(householdId).collection('expenses').orderBy('createdAt','desc').limit(20).get();
+  const homeList = document.getElementById('home-expenses');
+  const finList = document.getElementById('finance-list');
+  let total = 0;
+
+  if (snap.empty) {
+    homeList.innerHTML = '<div class="empty-state">Nenhum gasto ainda</div>';
+    finList.innerHTML = '<div class="empty-state">Nenhum lançamento</div>';
+  } else {
+    let html = '';
+    snap.forEach(doc => {
+      const e = doc.data();
+      total += e.value;
+      const member = householdMembers.find(m => m.uid === e.userId);
+      const name = e.userId === currentUser.uid ? 'Você' : (member ? member.name.split(' ')[0] : 'Alguém');
+      html += `
+        <div class="exp-row">
+          <div class="exp-ic">💳</div>
+          <div class="exp-info">
+            <div class="exp-name">${e.description}</div>
+            <div class="exp-meta">${e.category} · ${e.payment}</div>
+          </div>
+          <div class="exp-right">
+            <div class="exp-val">R$ ${e.value.toFixed(2)}</div>
+            <span class="who-pill" style="background:${colorForUid(e.userId)}22;color:${colorForUid(e.userId)}">${name}</span>
+          </div>
+        </div>`;
+    });
+    homeList.innerHTML = html;
+    finList.innerHTML = html;
+  }
+  document.getElementById('total-month').textContent = total.toFixed(2);
+}
+
+async function loadTasks() {
+  const snap = await db.collection('households').doc(householdId).collection('tasks').orderBy('createdAt','desc').limit(30).get();
+  const homeList = document.getElementById('home-tasks');
+  const fullList = document.getElementById('tasks-list');
+
+  if (snap.empty) {
+    homeList.innerHTML = '<div class="empty-state">Sem tarefas</div>';
+    fullList.innerHTML = '<div class="empty-state">Sem tarefas</div>';
+    return;
+  }
+
+  let html = '';
+  snap.forEach(doc => {
+    const t = doc.data();
+    const member = householdMembers.find(m => m.uid === t.assignedTo);
+    const name = t.assignedTo === currentUser.uid ? 'Você' : (member ? member.name.split(' ')[0] : 'Alguém');
+    html += `
+      <div class="task-row">
+        <div class="t-chk ${t.done?'done':''}" onclick="toggleTask('${doc.id}', ${!t.done})">${t.done?'✓':''}</div>
+        <div>
+          <div class="t-name ${t.done?'done':''}">${t.description}</div>
+          <div class="t-meta">${name} · ${t.done?'concluída':'pendente'}</div>
+        </div>
+      </div>`;
+  });
+  homeList.innerHTML = html;
+  fullList.innerHTML = html;
+}
+
+async function toggleTask(taskId, done) {
+  await db.collection('households').doc(householdId).collection('tasks').doc(taskId).update({ done });
+  if (done) {
+    const taskDoc = await db.collection('households').doc(householdId).collection('tasks').doc(taskId).get();
+    await awardPoints(POINTS.task, 'task', taskDoc.data().description, '✅');
+    celebrateTaskDone(taskDoc.data().description);
+  }
+  loadTasks();
+  loadRewards();
+}
+
+function nav(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('p-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('nav-' + id).classList.add('active');
+  document.getElementById('screen').scrollTop = 0;
+
+  document.getElementById('fab').style.display = (id === 'familia' || id === 'recompensas') ? 'none' : 'flex';
+  currentModalType = id === 'tarefas' ? 'tarefa' : 'gasto';
+}
+
+function openModal() {
+  document.getElementById(currentModalType === 'tarefa' ? 'modal-tarefa' : 'modal-gasto').classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+async function saveExpense() {
+  const desc = document.getElementById('f-desc').value.trim();
+  const val = parseFloat(document.getElementById('f-val').value);
+  if (!desc || !val) { showToast('Preencha descrição e valor'); return; }
+
+  await db.collection('households').doc(householdId).collection('expenses').add({
+    description: desc,
+    value: val,
+    category: document.getElementById('f-cat').value,
+    payment: document.getElementById('f-pay').value,
+    userId: currentUser.uid,
+    createdAt: new Date()
+  });
+
+  closeModal('modal-gasto');
+  document.getElementById('f-desc').value = '';
+  document.getElementById('f-val').value = '';
+  showToast('🎉 Gasto salvo!');
+  await awardPoints(POINTS.expense, 'expense', desc, '💳');
+  loadExpenses();
+  loadRewards();
+}
+
+async function saveTask() {
+  const desc = document.getElementById('t-desc').value.trim();
+  const who = document.getElementById('t-who').value;
+  if (!desc) { showToast('Descreva a tarefa'); return; }
+
+  await db.collection('households').doc(householdId).collection('tasks').add({
+    description: desc,
+    assignedTo: who,
+    done: false,
+    createdAt: new Date()
+  });
+
+  closeModal('modal-tarefa');
+  document.getElementById('t-desc').value = '';
+  showToast('📝 Tarefa criada!');
+  loadTasks();
+}
+
+async function awardPoints(points, type, label, icon) {
+  await db.collection('households').doc(householdId).collection('points').add({
+    points, type, label, icon,
+    userId: currentUser.uid,
+    createdAt: new Date()
+  });
+}
+
+async function loadRewards() {
+  const snap = await db.collection('households').doc(householdId).collection('points').orderBy('createdAt','desc').limit(100).get();
+
+  let totalPoints = 0;
+  const byUser = {};
+  const history = [];
+  let tasksDone = 0, expensesCount = 0;
+
+  snap.forEach(doc => {
+    const p = doc.data();
+    totalPoints += p.points;
+    byUser[p.userId] = (byUser[p.userId] || 0) + p.points;
+    history.push(p);
+    if (p.type === 'task') tasksDone++;
+    if (p.type === 'expense') expensesCount++;
+  });
+
+  const level = Math.floor(totalPoints / POINTS_PER_LEVEL) + 1;
+  const ptsIntoLevel = totalPoints % POINTS_PER_LEVEL;
+  const ptsToNext = POINTS_PER_LEVEL - ptsIntoLevel;
+
+  document.getElementById('xp-display').textContent = totalPoints;
+  document.getElementById('level-badge').textContent = `🏆 Nível ${level}`;
+  document.getElementById('xp-next-lbl').innerHTML = `${ptsToNext} pts<br>pro nível ${level + 1}`;
+  document.getElementById('xp-bar').style.width = ptsIntoLevel + '%';
+
+  renderRanking(byUser);
+  renderBadges({ tasksDone, expensesCount, level });
+  renderHistory(history.slice(0, 15));
+}
+
+function renderRanking(byUser) {
+  const ranked = householdMembers
+    .map(m => ({ ...m, pts: byUser[m.uid] || 0 }))
+    .sort((a,b) => b.pts - a.pts);
+
+  const medals = ['🥇','🥈','🥉'];
+  document.getElementById('rank-list').innerHTML = ranked.map((m,i) => `
+    <div class="rank-row">
+      <div class="rank-pos">${medals[i] || (i+1)}</div>
+      <div class="rank-av" style="background:${colorForUid(m.uid)}">${(m.name||'?')[0].toUpperCase()}</div>
+      <div class="rank-info">
+        <div class="rank-name">${m.uid === currentUser.uid ? 'Você' : m.name}</div>
+        <div class="rank-tasks">membro do lar</div>
+      </div>
+      <div class="rank-pts">
+        <div class="rank-pts-val">${m.pts}</div>
+        <div class="rank-pts-lbl">pontos</div>
+      </div>
+    </div>
+  `).join('') || '<div class="empty-state">Sem pontuação ainda</div>';
+}
+
+function renderBadges(stats) {
+  document.getElementById('badges-grid').innerHTML = BADGES.map(b => {
+    const unlocked = b.need(stats);
+    return `
+      <div class="badge-card ${unlocked ? '' : 'locked'}">
+        ${unlocked ? '<span class="badge-unlocked-tag">✓ Conquistado</span>' : ''}
+        <span class="badge-icon">${b.icon}</span>
+        <div class="badge-name">${b.name}</div>
+        <div class="badge-desc">${b.desc}</div>
+        <span class="badge-pts">${unlocked ? '+' + b.pts + ' pts' : '🔒 +' + b.pts + ' pts'}</span>
+      </div>`;
+  }).join('');
+}
+
+function renderHistory(history) {
+  const list = document.getElementById('history-list');
+  if (!history.length) { list.innerHTML = '<div class="empty-state">Nenhum ponto registrado ainda</div>'; return; }
+
+  list.innerHTML = history.map(p => {
+    const member = householdMembers.find(m => m.uid === p.userId);
+    const name = p.userId === currentUser.uid ? 'Você' : (member ? member.name.split(' ')[0] : 'Alguém');
+    const when = p.createdAt && p.createdAt.toDate ? p.createdAt.toDate().toLocaleDateString('pt-BR', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
+    return `
+      <div class="hist-item">
+        <div class="hist-icon" style="background:${colorForUid(p.userId)}22">${p.icon || '⭐'}</div>
+        <div class="hist-info">
+          <div class="hist-name">${p.label}</div>
+          <div class="hist-when">${name} · ${when}</div>
+        </div>
+        <div class="hist-pts">+${p.points} pts</div>
+      </div>`;
+  }).join('');
+}
+
+const CONFETTI_COLORS = ['#3B82F6','#F472B6','#FBBF24','#34D399','#A855F7','#FB923C'];
+
+function celebrateTaskDone(taskName) {
   launchConfetti();
-
-  setTimeout(() => {
-    animateXP();
-    showReward();
-  }, 400);
-
-  setTimeout(() => { animRunning = false; }, 3000);
+  setTimeout(() => showRewardPopup(taskName), 300);
 }
 
 function launchConfetti() {
   const overlay = document.getElementById('anim-overlay');
   overlay.innerHTML = '';
-  const phone = document.getElementById('phone');
-  const w = phone.offsetWidth;
-  const h = phone.offsetHeight;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
 
-  for(let i = 0; i < 60; i++) {
+  for (let i = 0; i < 60; i++) {
     const el = document.createElement('div');
     el.className = 'confetti-piece';
     const size = 8 + Math.random() * 10;
     const x = 20 + Math.random() * (w - 40);
-    const startY = h * 0.45 + (Math.random() - 0.5) * 60;
-    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    const shape = Math.random() > 0.5 ? '50%' : (Math.random() > 0.5 ? '2px' : '0');
+    const startY = h * 0.4 + (Math.random() - 0.5) * 60;
+    const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+    const shape = Math.random() > 0.5 ? '50%' : '2px';
     el.style.cssText = `width:${size}px;height:${size}px;background:${color};border-radius:${shape};left:${x}px;top:${startY}px;`;
     overlay.appendChild(el);
 
@@ -437,93 +933,53 @@ function launchConfetti() {
     const delay = Math.random() * 0.2;
 
     el.animate([
-      {opacity:1, transform:'translate(0,0) rotate(0deg) scale(1)'},
-      {opacity:1, transform:`translate(${tx*0.6}px,${ty*0.6}px) rotate(${rot*0.5}deg) scale(1.2)`, offset: 0.3},
-      {opacity:0, transform:`translate(${tx}px,${ty + 80}px) rotate(${rot}deg) scale(0.5)`}
-    ], {duration: 1000, delay: delay * 1000, easing:'cubic-bezier(0.25,0.46,0.45,0.94)', fill:'both'});
+      { opacity: 1, transform: 'translate(0,0) rotate(0deg) scale(1)' },
+      { opacity: 1, transform: `translate(${tx*0.6}px,${ty*0.6}px) rotate(${rot*0.5}deg) scale(1.2)`, offset: 0.3 },
+      { opacity: 0, transform: `translate(${tx}px,${ty + 80}px) rotate(${rot}deg) scale(0.5)` }
+    ], { duration: 1000, delay: delay * 1000, easing: 'cubic-bezier(0.25,0.46,0.45,0.94)', fill: 'both' });
   }
 
-  // Stars
-  for(let i = 0; i < 8; i++) {
+  for (let i = 0; i < 8; i++) {
     const star = document.createElement('div');
     star.className = 'star-burst';
     star.textContent = ['⭐','✨','🌟','💫'][Math.floor(Math.random()*4)];
     const x = 30 + Math.random() * (w - 60);
-    const y = h * 0.3 + Math.random() * h * 0.3;
+    const y = h * 0.25 + Math.random() * h * 0.3;
     star.style.cssText = `left:${x}px;top:${y}px;`;
     overlay.appendChild(star);
     const delay = 0.1 + Math.random() * 0.4;
     star.animate([
-      {opacity:0, transform:'scale(0) translateY(0)'},
-      {opacity:1, transform:'scale(1.4) translateY(-20px)', offset:0.4},
-      {opacity:0, transform:'scale(0.8) translateY(-50px)'}
-    ], {duration:900, delay: delay*1000, easing:'ease-out', fill:'both'});
+      { opacity: 0, transform: 'scale(0) translateY(0)' },
+      { opacity: 1, transform: 'scale(1.4) translateY(-20px)', offset: 0.4 },
+      { opacity: 0, transform: 'scale(0.8) translateY(-50px)' }
+    ], { duration: 900, delay: delay * 1000, easing: 'ease-out', fill: 'both' });
   }
 
   setTimeout(() => { overlay.innerHTML = ''; }, 2000);
 }
 
-function animateXP() {
-  const display = document.getElementById('xp-display');
-  const bar = document.getElementById('xp-bar');
-  const jptsEl = document.getElementById('joao-pts');
-  let current = 650;
-  const target = 700;
-  const step = (target - current) / 30;
-
-  const interval = setInterval(() => {
-    current = Math.min(current + step, target);
-    const rounded = Math.round(current);
-    display.textContent = rounded;
-    jptsEl.textContent = rounded;
-    bar.style.width = (65 + ((current - 650) / (1000 - 650)) * 35 * (50/350)) + '%';
-    if(current >= target) clearInterval(interval);
-  }, 30);
-}
-
-function showReward() {
-  document.getElementById('overlay-dim').style.display = 'block';
-  const popup = document.getElementById('reward-popup');
-  popup.classList.add('show');
-
-  const msgs = [
-    {emoji:'🎉', title:'Incrível, João!', sub:'Fazer o mercado · concluído'},
-    {emoji:'⭐', title:'Tarefa concluída!', sub:'Você ganhou pontos para o casal!'},
-  ];
-  const m = msgs[0];
-  document.getElementById('r-emoji').textContent = m.emoji;
-  document.getElementById('r-title').textContent = m.title;
-  document.getElementById('r-sub').textContent = m.sub;
+function showRewardPopup(taskName) {
+  document.getElementById('overlay-dim').classList.add('show');
+  document.getElementById('r-title').textContent = 'Tarefa concluída!';
+  document.getElementById('r-sub').textContent = taskName;
+  document.getElementById('r-pts-badge').textContent = `+${POINTS.task} pontos! ⭐`;
+  document.getElementById('reward-popup').classList.add('show');
 }
 
 function closeReward() {
-  document.getElementById('overlay-dim').style.display = 'none';
+  document.getElementById('overlay-dim').classList.remove('show');
   const popup = document.getElementById('reward-popup');
-  popup.style.animation = 'none';
   popup.classList.remove('show');
   popup.style.opacity = '0';
   popup.style.transform = 'translate(-50%,-50%) scale(0)';
-  setTimeout(() => {
-    popup.style.opacity = '';
-    popup.style.transform = '';
-  }, 100);
+  setTimeout(() => { popup.style.opacity = ''; popup.style.transform = ''; }, 100);
+}
 
-  // Reset demo after 2s
-  setTimeout(() => {
-    taskDone = false;
-    const chk = document.getElementById('demo-chk');
-    chk.classList.remove('done');
-    chk.textContent = '';
-    const name = document.getElementById('demo-task-name');
-    name.style.textDecoration = '';
-    name.style.color = '';
-    document.getElementById('demo-task-meta').textContent = 'João · pendente — toque para completar!';
-    document.getElementById('tap-hint').style.display = 'block';
-    document.getElementById('xp-display').textContent = '650';
-    document.getElementById('joao-pts').textContent = '650';
-    document.getElementById('xp-bar').style.width = '65%';
-    animRunning = false;
-  }, 2000);
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
 }
 </script>
 </body>
