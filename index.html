@@ -17,14 +17,11 @@
   --ink:#0F172A;--ink-mid:#475569;--ink-light:#94A3B8;
   --border:#E2E8F0;--bg:#F0F7FF;--white:#fff;
 }
-body{font-family:'Nunito',sans-serif;background:#CBD5E1;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px 40px;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;min-height:100dvh;}
 
-.phone{width:390px;min-height:844px;background:var(--bg);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 0 0 10px #1E293B,0 0 0 12px #334155,0 40px 80px rgba(0,0,0,0.4);display:flex;flex-direction:column;}
-.status-bar{background:var(--white);padding:14px 28px 10px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;color:var(--ink);flex-shrink:0;}
-.status-time{font-size:16px;font-weight:900;}
+.phone{width:100%;max-width:600px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--bg);position:relative;display:flex;flex-direction:column;}
 
-.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:90px;}
-.screen::-webkit-scrollbar{display:none;}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:90px;}
 
 /* Login screen */
 .login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding:40px 20px;background:var(--bg);}
@@ -120,11 +117,6 @@ body{font-family:'Nunito',sans-serif;background:#CBD5E1;min-height:100vh;display
 <body>
 
 <div class="phone" id="phone">
-  <div class="status-bar">
-    <div class="status-time" id="time">21:34</div>
-    <div style="font-size:13px;font-weight:700;">📶 🔋</div>
-  </div>
-
   <div class="screen" id="screen">
     <!-- Login Screen -->
     <div id="login-screen" class="login-screen">
@@ -331,12 +323,21 @@ auth.onAuthStateChanged(async (user) => {
 
 async function loginWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
+  const errorBox = document.getElementById('login-error');
+  errorBox.style.display = 'none';
   try {
     const result = await auth.signInWithPopup(provider);
     currentUser = result.user;
   } catch (error) {
-    document.getElementById('login-error').textContent = 'Erro ao fazer login: ' + error.message;
-    document.getElementById('login-error').style.display = 'block';
+    console.error('Erro de login:', error.code, error.message);
+    let msg = 'Erro ao fazer login: ' + error.code;
+    if (error.code === 'auth/unauthorized-domain') {
+      msg = 'Este site não está autorizado no Firebase ainda. Vá em Firebase → Authentication → Settings → Authorized domains e adicione este domínio.';
+    } else if (error.code === 'auth/popup-blocked') {
+      msg = 'O navegador bloqueou a janela de login. Permita pop-ups para este site e tente de novo.';
+    }
+    errorBox.textContent = msg;
+    errorBox.style.display = 'block';
   }
 }
 
@@ -477,11 +478,7 @@ function logout() {
   }
 }
 
-// Update time
-setInterval(() => {
-  const now = new Date();
-  document.getElementById('time').textContent = now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-}, 1000);
+// Login screen padding fix on real mobile viewport
 </script>
 </body>
 </html>
