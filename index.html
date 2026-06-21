@@ -55,8 +55,8 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;background:var(--white);border-top:2px solid var(--border);display:flex;padding:10px 8px calc(10px + env(safe-area-inset-bottom));z-index:50;}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border-radius:12px;cursor:pointer;border:none;background:transparent;font-family:'Nunito',sans-serif;transition:background 0.15s;}
 .nav-item.active{background:var(--blue-l);}
-.nav-icon{font-size:22px;line-height:1;}
-.nav-label{font-size:10px;font-weight:800;color:var(--ink-light);}
+.nav-icon{font-size:19px;line-height:1;}
+.nav-label{font-size:9px;font-weight:800;color:var(--ink-light);}
 .nav-item.active .nav-label{color:var(--blue);}
 
 .greeting{margin:16px 16px 14px;border-radius:20px;background:var(--blue);padding:20px;position:relative;overflow:hidden;box-shadow:0 4px 0 var(--blue-d);}
@@ -196,8 +196,102 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
 .r-sub{font-size:14px;font-weight:700;color:var(--ink-light);margin-bottom:16px;}
 .r-pts-badge{display:inline-block;background:var(--yellow-l);border:2px solid var(--yellow);border-radius:20px;padding:8px 20px;font-size:20px;font-weight:900;color:#92400E;margin-bottom:20px;animation:pulsePts 0.4s 0.8s ease both;}
 @keyframes pulsePts{0%{transform:scale(0.8)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
-.r-close-btn{background:var(--blue);color:white;border:none;border-radius:14px;padding:14px 28px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;width:100%;box-shadow:0 4px 0 var(--blue-d);}
-.r-close-btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--blue-d);}
+/* ── Streak ── */
+.streak-row{display:flex;gap:6px;margin:0 16px 16px;overflow:hidden;}
+.s-day{flex:1;background:white;border-radius:10px;border:2px solid var(--border);padding:8px 4px;text-align:center;font-size:9px;font-weight:800;color:var(--ink-light);text-transform:uppercase;}
+.s-day .s-ic{font-size:16px;display:block;margin-bottom:2px;}
+.s-day.done{border-color:var(--yellow);background:var(--yellow-l);}
+.s-day.cur{border-color:var(--blue);background:var(--blue-l);color:var(--blue);}
+
+/* ── Stats grid (preview style) ── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px 16px;}
+.stat-card{background:white;border-radius:14px;border:2px solid var(--border);padding:14px;text-align:center;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:14px 14px 0 0;}
+.sc-blue::before{background:var(--blue);}
+.sc-pink::before{background:var(--pink);}
+.sc-green::before{background:var(--green);}
+.sc-yellow::before{background:var(--yellow);}
+.stat-em{font-size:24px;margin-bottom:4px;}
+.stat-val{font-size:20px;font-weight:900;color:var(--ink);letter-spacing:-0.5px;}
+.stat-lbl{font-size:10px;font-weight:800;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.04em;margin-top:2px;}
+.stat-trend{font-size:11px;font-weight:700;margin-top:3px;}
+
+.sec-row{display:flex;align-items:center;justify-content:space-between;margin:0 16px 10px;}
+.sec-title{font-size:15px;font-weight:900;color:var(--ink);}
+.sec-link{font-size:12px;font-weight:800;color:var(--blue);background:var(--blue-l);padding:4px 10px;border-radius:20px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;}
+
+/* ── Finance hero (preview style) ── */
+.fin-hero{margin:0 16px 14px;background:var(--blue);border-radius:20px;padding:20px;box-shadow:0 4px 0 var(--blue-d);}
+.fin-hero-label{font-size:12px;font-weight:700;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:0.05em;}
+.fin-hero-val{font-size:36px;font-weight:900;color:white;letter-spacing:-1px;margin:4px 0 12px;}
+.fin-split{display:flex;gap:10px;}
+.fin-split-item{flex:1;background:rgba(255,255,255,0.15);border-radius:12px;padding:10px 12px;}
+.fin-split-name{font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:3px;}
+.fin-split-val{font-size:16px;font-weight:900;color:white;}
+.balance-pill{margin:0 16px 14px;background:var(--pink-l);border-radius:14px;border:2px solid var(--pink);padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.balance-pill span{font-size:20px;}
+.balance-txt{font-size:14px;font-weight:800;color:var(--pink-d);}
+
+.filter-scroll{display:flex;gap:8px;overflow-x:auto;padding:0 16px 14px;}
+.filter-scroll::-webkit-scrollbar{display:none;}
+.fbtn{flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:800;border:2px solid var(--border);background:white;color:var(--ink-mid);cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;}
+.fbtn.on{background:var(--blue);color:white;border-color:var(--blue);box-shadow:0 3px 0 var(--blue-d);}
+
+.exp-list{margin:0 16px;}
+.exp-item{background:white;border-radius:14px;border:2px solid var(--border);padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+.exp-item-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.exp-item-info{flex:1;min-width:0;}
+.exp-item-name{font-size:14px;font-weight:800;color:var(--ink);}
+.exp-item-row{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;}
+.cat-badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;}
+.cat-ali{background:var(--yellow-l);color:#92400E;}
+.cat-tra{background:var(--blue-l);color:var(--blue-d);}
+.cat-cas{background:var(--green-l);color:var(--green-d);}
+.cat-laz{background:var(--pink-l);color:var(--pink-d);}
+.cat-sau{background:var(--orange-l);color:#9A3412;}
+.cat-out{background:var(--border);color:var(--ink-mid);}
+.pay-lbl{font-size:10px;font-weight:700;color:var(--ink-light);}
+.exp-item-right{text-align:right;flex-shrink:0;}
+.exp-item-val{font-size:16px;font-weight:900;color:var(--ink);}
+
+/* ── Kanban (preview style) ── */
+.kanban{display:flex;flex-direction:column;gap:14px;padding:0 16px;}
+.k-col{border-radius:20px;overflow:hidden;border:2px solid var(--border);}
+.k-head{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+.k-head-title{font-size:13px;font-weight:900;}
+.k-count{font-size:12px;font-weight:800;padding:2px 10px;border-radius:20px;background:rgba(255,255,255,0.55);}
+.k-body{background:white;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:40px;}
+.k-card{background:#F8FAFC;border:2px solid #F1F5F9;border-radius:10px;padding:12px;cursor:pointer;}
+.k-card-name{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:8px;}
+.k-card-foot{display:flex;align-items:center;justify-content:space-between;}
+.k-person{font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;}
+.k-due{font-size:11px;font-weight:700;color:var(--ink-light);}
+.k-due.late{color:var(--red);}
+.k-done{opacity:0.5;}
+.k-done .k-card-name{text-decoration:line-through;}
+
+/* ── Calendar ── */
+.cal-box{margin:0 16px 14px;background:white;border-radius:20px;border:2px solid var(--border);padding:18px;}
+.cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.cal-title{font-size:17px;font-weight:900;color:var(--ink);}
+.cal-nav{display:flex;gap:6px;}
+.cal-btn{width:32px;height:32px;border-radius:10px;border:2px solid var(--border);background:white;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink-mid);}
+.dow-row{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:6px;}
+.dow{font-size:10px;font-weight:800;color:var(--ink-light);text-transform:uppercase;padding:3px 0;}
+.day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.d{aspect-ratio:1;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--ink-mid);cursor:pointer;position:relative;}
+.d:hover{background:var(--blue-l);}
+.d.today{background:var(--blue);color:white;box-shadow:0 3px 0 var(--blue-d);}
+.d.other{color:#CBD5E1;}
+.d .dot{width:5px;height:5px;border-radius:50%;position:absolute;bottom:3px;}
+.ev-card{margin:0 16px;background:white;border-radius:18px;border:2px solid var(--border);overflow:hidden;}
+.ev-row{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:2px dashed #F1F5F9;}
+.ev-row:last-child{border:none;}
+.ev-date{width:44px;height:44px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}
+.ev-day{font-size:16px;font-weight:900;line-height:1;}
+.ev-mon{font-size:9px;font-weight:800;text-transform:uppercase;}
+.ev-name{font-size:14px;font-weight:800;color:var(--ink);}
+.ev-time{font-size:11px;font-weight:600;color:var(--ink-light);margin-top:2px;}
 </style>
 </head>
 <body>
@@ -235,18 +329,39 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
             <div class="av-pair" id="home-avatars"></div>
           </div>
         </div>
+        <div class="gap"></div>
         <div class="greeting">
           <div class="greeting-emoji">💑</div>
           <h2 id="greeting-name">Olá!</h2>
           <p id="greeting-sub">Bem-vindo ao Lar</p>
         </div>
-        <div class="card">
-          <div class="card-title">💳 Últimos gastos</div>
-          <div id="home-expenses"><div class="empty-state">Nenhum gasto ainda</div></div>
+
+        <div class="streak-row" id="streak-row"></div>
+
+        <div class="stats-grid" id="stats-grid"></div>
+
+        <div class="sec-row">
+          <div class="sec-title">💳 Últimos gastos</div>
+          <button class="sec-link" onclick="nav('financas')">ver todos →</button>
         </div>
-        <div class="card">
-          <div class="card-title">📝 Tarefas</div>
-          <div id="home-tasks"><div class="empty-state">Sem tarefas</div></div>
+        <div class="card" style="margin:0 16px 16px;padding:0;">
+          <div id="home-expenses" style="padding:6px 14px;"><div class="empty-state">Nenhum gasto ainda</div></div>
+        </div>
+
+        <div class="sec-row">
+          <div class="sec-title">📝 Tarefas de hoje</div>
+          <button class="sec-link" onclick="nav('tarefas')">ver todas →</button>
+        </div>
+        <div class="card" style="margin:0 16px 16px;padding:0;">
+          <div id="home-tasks" style="padding:6px 14px;"><div class="empty-state">Sem tarefas</div></div>
+        </div>
+
+        <div class="sec-row">
+          <div class="sec-title">🗓️ Próximos eventos</div>
+          <button class="sec-link" onclick="nav('agenda')">ver todos →</button>
+        </div>
+        <div class="ev-card" style="margin:0 16px 16px;">
+          <div id="home-events"><div class="empty-state">Sem eventos</div></div>
         </div>
       </div>
 
@@ -256,14 +371,15 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
           <div class="hdr-title">💰 Finanças</div>
           <div class="av-pair" id="fin-avatars"></div>
         </div>
-        <div class="card" style="text-align:center;">
-          <div style="font-size:12px;color:var(--ink-light);font-weight:700;">Total do mês</div>
-          <div style="font-size:28px;font-weight:900;color:var(--blue);margin:6px 0;">R$ <span id="total-month">0,00</span></div>
+        <div class="gap"></div>
+        <div class="fin-hero">
+          <div class="fin-hero-label">Total do mês</div>
+          <div class="fin-hero-val">R$ <span id="total-month">0,00</span></div>
+          <div class="fin-split" id="fin-split"></div>
         </div>
-        <div class="card">
-          <div class="card-title">Lançamentos</div>
-          <div id="finance-list"><div class="empty-state">Nenhum lançamento</div></div>
-        </div>
+        <div class="filter-scroll" id="fin-filters"></div>
+        <div class="exp-list" id="finance-list"><div class="empty-state">Nenhum lançamento</div></div>
+        <div class="gap"></div>
       </div>
 
       <!-- TAREFAS -->
@@ -272,10 +388,50 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
           <div class="hdr-title">✅ Tarefas</div>
           <div class="av-pair" id="task-avatars"></div>
         </div>
-        <div class="card">
-          <div class="card-title">Todas as tarefas</div>
-          <div id="tasks-list"><div class="empty-state">Sem tarefas</div></div>
+        <div class="gap"></div>
+        <div class="kanban">
+          <div class="k-col" style="border-color:var(--red)">
+            <div class="k-head" style="background:var(--red-l)">
+              <div class="k-head-title" style="color:#991B1B">😬 Pendente</div>
+              <span class="k-count" style="color:#991B1B" id="k-count-pending">0</span>
+            </div>
+            <div class="k-body" id="k-pending"></div>
+          </div>
+          <div class="k-col" style="border-color:var(--green)">
+            <div class="k-head" style="background:var(--green-l)">
+              <div class="k-head-title" style="color:var(--green-d)">🎉 Concluído</div>
+              <span class="k-count" style="color:var(--green-d)" id="k-count-done">0</span>
+            </div>
+            <div class="k-body" id="k-done"></div>
+          </div>
         </div>
+        <div class="gap"></div>
+      </div>
+
+      <!-- AGENDA -->
+      <div id="p-agenda" class="panel">
+        <div class="hdr">
+          <div class="hdr-title">📅 Agenda</div>
+          <div class="av-pair" id="agenda-avatars"></div>
+        </div>
+        <div class="gap"></div>
+        <div class="cal-box">
+          <div class="cal-hdr">
+            <div class="cal-title" id="cal-title">Carregando...</div>
+            <div class="cal-nav">
+              <button class="cal-btn" onclick="changeMonth(-1)">‹</button>
+              <button class="cal-btn" onclick="changeMonth(1)">›</button>
+            </div>
+          </div>
+          <div class="dow-row">
+            <div class="dow">D</div><div class="dow">S</div><div class="dow">T</div>
+            <div class="dow">Q</div><div class="dow">Q</div><div class="dow">S</div><div class="dow">S</div>
+          </div>
+          <div class="day-grid" id="cal-days"></div>
+        </div>
+        <div class="sec-row" style="margin-top:4px"><div class="sec-title">Próximos eventos</div></div>
+        <div class="ev-card" id="agenda-events"><div class="empty-state">Sem eventos</div></div>
+        <div class="gap"></div>
       </div>
 
       <!-- RECOMPENSAS -->
@@ -354,6 +510,9 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
       <button class="nav-item" id="nav-tarefas" onclick="nav('tarefas')">
         <div class="nav-icon">✅</div><div class="nav-label">Tarefas</div>
       </button>
+      <button class="nav-item" id="nav-agenda" onclick="nav('agenda')">
+        <div class="nav-icon">📅</div><div class="nav-label">Agenda</div>
+      </button>
       <button class="nav-item" id="nav-recompensas" onclick="nav('recompensas')">
         <div class="nav-icon">⭐</div><div class="nav-label">Pontos</div>
       </button>
@@ -414,6 +573,28 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);}
       </div>
       <button class="btn-save" onclick="saveTask()">Salvar</button>
       <button class="btn-cancel" onclick="closeModal('modal-tarefa')">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- MODAL: novo evento -->
+  <div class="modal" id="modal-evento">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">📅 Novo evento</div>
+      <div class="field">
+        <label>O que é o evento?</label>
+        <input type="text" id="ev-desc" placeholder="Ex: Aniversário da mãe">
+      </div>
+      <div class="field">
+        <label>Data</label>
+        <input type="date" id="ev-date">
+      </div>
+      <div class="field">
+        <label>Horário (opcional)</label>
+        <input type="time" id="ev-time">
+      </div>
+      <button class="btn-save" onclick="saveEvent()">Salvar</button>
+      <button class="btn-cancel" onclick="closeModal('modal-evento')">Cancelar</button>
     </div>
   </div>
 
@@ -605,7 +786,7 @@ function renderAvatars() {
   const html = householdMembers.slice(0,3).map((m,i) => `
     <div class="av" style="background:${colorForUid(m.uid)};margin-left:${i>0?'-8px':'0'}">${(m.name||'?')[0].toUpperCase()}</div>
   `).join('');
-  ['home-avatars','fin-avatars','task-avatars','rew-avatars'].forEach(id => {
+  ['home-avatars','fin-avatars','task-avatars','rew-avatars','agenda-avatars'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = html;
   });
@@ -668,71 +849,182 @@ function renderGreeting() {
 }
 
 async function loadEverything() {
-  await Promise.all([loadExpenses(), loadTasks(), loadRewards()]);
+  await Promise.all([loadExpenses(), loadTasks(), loadRewards(), loadEvents()]);
+  renderStreak();
+  renderStatsGrid();
 }
 
-async function loadExpenses() {
-  const snap = await db.collection('households').doc(householdId).collection('expenses').orderBy('createdAt','desc').limit(20).get();
-  const homeList = document.getElementById('home-expenses');
-  const finList = document.getElementById('finance-list');
-  let total = 0;
+function renderStreak() {
+  const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const todayIdx = new Date().getDay();
+  let html = '';
+  days.forEach((d,i) => {
+    const isToday = i === todayIdx;
+    const isPast = i < todayIdx;
+    html += `<div class="s-day ${isPast?'done':''} ${isToday?'cur':''}"><span class="s-ic">${isPast?'🔥':isToday?'⚡':'○'}</span>${d}</div>`;
+  });
+  const el = document.getElementById('streak-row');
+  if (el) el.innerHTML = html;
+}
 
-  if (snap.empty) {
-    homeList.innerHTML = '<div class="empty-state">Nenhum gasto ainda</div>';
-    finList.innerHTML = '<div class="empty-state">Nenhum lançamento</div>';
-  } else {
-    let html = '';
-    snap.forEach(doc => {
-      const e = doc.data();
-      total += e.value;
-      const member = householdMembers.find(m => m.uid === e.userId);
-      const name = e.userId === currentUser.uid ? 'Você' : (member ? member.name.split(' ')[0] : 'Alguém');
-      html += `
-        <div class="exp-row">
-          <div class="exp-ic">💳</div>
-          <div class="exp-info">
-            <div class="exp-name">${e.description}</div>
-            <div class="exp-meta">${e.category} · ${e.payment}</div>
-          </div>
-          <div class="exp-right">
-            <div class="exp-val">R$ ${e.value.toFixed(2)}</div>
-            <span class="who-pill" style="background:${colorForUid(e.userId)}22;color:${colorForUid(e.userId)}">${name}</span>
-          </div>
-        </div>`;
-    });
-    homeList.innerHTML = html;
-    finList.innerHTML = html;
-  }
+const CAT_ICONS = { 'Alimentação':'🛒','Casa':'🏠','Transporte':'⛽','Saúde':'💊','Lazer':'🎬','Outro':'📦' };
+const CAT_CLASS = { 'Alimentação':'cat-ali','Casa':'cat-cas','Transporte':'cat-tra','Saúde':'cat-sau','Lazer':'cat-laz','Outro':'cat-out' };
+let allExpenses = [];
+let expenseFilter = 'all';
+
+async function loadExpenses() {
+  const snap = await db.collection('households').doc(householdId).collection('expenses').orderBy('createdAt','desc').limit(50).get();
+  allExpenses = [];
+  snap.forEach(doc => allExpenses.push({ id: doc.id, ...doc.data() }));
+
+  renderHomeExpenses();
+  renderFinanceHero();
+  renderFinanceFilters();
+  renderFinanceList();
+}
+
+function renderHomeExpenses() {
+  const homeList = document.getElementById('home-expenses');
+  const recent = allExpenses.slice(0, 3);
+  if (!recent.length) { homeList.innerHTML = '<div class="empty-state">Nenhum gasto ainda</div>'; return; }
+  homeList.innerHTML = recent.map(e => {
+    const member = householdMembers.find(m => m.uid === e.userId);
+    const name = e.userId === currentUser.uid ? 'Você' : (member ? member.name.split(' ')[0] : 'Alguém');
+    return `
+      <div class="exp-row">
+        <div class="exp-ic" style="background:${colorForUid(e.userId)}22">${CAT_ICONS[e.category]||'💳'}</div>
+        <div class="exp-info">
+          <div class="exp-name">${e.description}</div>
+          <div class="exp-meta">${e.category} · ${e.payment}</div>
+        </div>
+        <div class="exp-right">
+          <div class="exp-val">R$ ${e.value.toFixed(2)}</div>
+          <span class="who-pill" style="background:${colorForUid(e.userId)}22;color:${colorForUid(e.userId)}">${name}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderFinanceHero() {
+  const total = allExpenses.reduce((s,e) => s + e.value, 0);
   document.getElementById('total-month').textContent = total.toFixed(2);
+
+  const byUser = {};
+  allExpenses.forEach(e => { byUser[e.userId] = (byUser[e.userId]||0) + e.value; });
+
+  document.getElementById('fin-split').innerHTML = householdMembers.map(m => {
+    const name = m.uid === currentUser.uid ? 'Você' : m.name.split(' ')[0];
+    return `
+      <div class="fin-split-item">
+        <div class="fin-split-name">${name} pagou</div>
+        <div class="fin-split-val">R$ ${(byUser[m.uid]||0).toFixed(2)}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderFinanceFilters() {
+  const cats = ['Alimentação','Casa','Transporte','Saúde','Lazer','Outro'];
+  let html = `<button class="fbtn ${expenseFilter==='all'?'on':''}" onclick="setExpenseFilter('all')">🌍 Todos</button>`;
+  householdMembers.forEach(m => {
+    const name = m.uid === currentUser.uid ? 'Você' : m.name.split(' ')[0];
+    html += `<button class="fbtn ${expenseFilter===m.uid?'on':''}" onclick="setExpenseFilter('${m.uid}')">${name}</button>`;
+  });
+  cats.forEach(c => {
+    html += `<button class="fbtn ${expenseFilter===c?'on':''}" onclick="setExpenseFilter('${c}')">${CAT_ICONS[c]} ${c}</button>`;
+  });
+  document.getElementById('fin-filters').innerHTML = html;
+}
+
+function setExpenseFilter(filter) {
+  expenseFilter = filter;
+  renderFinanceFilters();
+  renderFinanceList();
+}
+
+function renderFinanceList() {
+  let filtered = allExpenses;
+  if (expenseFilter !== 'all') {
+    filtered = allExpenses.filter(e => e.userId === expenseFilter || e.category === expenseFilter);
+  }
+
+  const list = document.getElementById('finance-list');
+  if (!filtered.length) { list.innerHTML = '<div class="empty-state">Nenhum lançamento</div>'; return; }
+
+  list.innerHTML = filtered.map(e => {
+    const member = householdMembers.find(m => m.uid === e.userId);
+    const name = e.userId === currentUser.uid ? 'Você' : (member ? member.name.split(' ')[0] : 'Alguém');
+    const date = e.createdAt && e.createdAt.toDate ? e.createdAt.toDate().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}) : '';
+    return `
+      <div class="exp-item">
+        <div class="exp-item-ic" style="background:${colorForUid(e.userId)}22">${CAT_ICONS[e.category]||'💳'}</div>
+        <div class="exp-item-info">
+          <div class="exp-item-name">${e.description}</div>
+          <div class="exp-item-row">
+            <span class="cat-badge ${CAT_CLASS[e.category]||'cat-out'}">${e.category}</span>
+            <span class="pay-lbl">${e.payment}</span>
+          </div>
+          <div style="margin-top:4px"><span class="who-pill" style="background:${colorForUid(e.userId)}22;color:${colorForUid(e.userId)}">${name} · ${date}</span></div>
+        </div>
+        <div class="exp-item-right">
+          <div class="exp-item-val">R$ ${e.value.toFixed(2)}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
 }
 
 async function loadTasks() {
-  const snap = await db.collection('households').doc(householdId).collection('tasks').orderBy('createdAt','desc').limit(30).get();
+  const snap = await db.collection('households').doc(householdId).collection('tasks').orderBy('createdAt','desc').limit(50).get();
   const homeList = document.getElementById('home-tasks');
-  const fullList = document.getElementById('tasks-list');
+  const pendCol = document.getElementById('k-pending');
+  const doneCol = document.getElementById('k-done');
 
-  if (snap.empty) {
+  const tasks = [];
+  snap.forEach(doc => tasks.push({ id: doc.id, ...doc.data() }));
+
+  if (!tasks.length) {
     homeList.innerHTML = '<div class="empty-state">Sem tarefas</div>';
-    fullList.innerHTML = '<div class="empty-state">Sem tarefas</div>';
+    pendCol.innerHTML = '<div class="empty-state">Sem tarefas</div>';
+    doneCol.innerHTML = '<div class="empty-state">Sem tarefas</div>';
+    document.getElementById('k-count-pending').textContent = '0';
+    document.getElementById('k-count-done').textContent = '0';
     return;
   }
 
-  let html = '';
-  snap.forEach(doc => {
-    const t = doc.data();
+  homeList.innerHTML = tasks.slice(0,3).map(t => {
     const member = householdMembers.find(m => m.uid === t.assignedTo);
     const name = t.assignedTo === currentUser.uid ? 'Você' : (member ? member.name.split(' ')[0] : 'Alguém');
-    html += `
+    return `
       <div class="task-row">
-        <div class="t-chk ${t.done?'done':''}" onclick="toggleTask('${doc.id}', ${!t.done})">${t.done?'✓':''}</div>
+        <div class="t-chk ${t.done?'done':''}" onclick="toggleTask('${t.id}', ${!t.done})">${t.done?'✓':''}</div>
         <div>
           <div class="t-name ${t.done?'done':''}">${t.description}</div>
           <div class="t-meta">${name} · ${t.done?'concluída':'pendente'}</div>
         </div>
       </div>`;
-  });
-  homeList.innerHTML = html;
-  fullList.innerHTML = html;
+  }).join('');
+
+  const pending = tasks.filter(t => !t.done);
+  const done = tasks.filter(t => t.done);
+
+  document.getElementById('k-count-pending').textContent = pending.length;
+  document.getElementById('k-count-done').textContent = done.length;
+
+  pendCol.innerHTML = pending.length ? pending.map(t => kanbanCard(t)).join('') : '<div class="empty-state">Nada pendente 🎉</div>';
+  doneCol.innerHTML = done.length ? done.map(t => kanbanCard(t)).join('') : '<div class="empty-state">Nenhuma ainda</div>';
+}
+
+function kanbanCard(t) {
+  const member = householdMembers.find(m => m.uid === t.assignedTo);
+  const name = t.assignedTo === currentUser.uid ? 'Você' : (member ? member.name.split(' ')[0] : 'Alguém');
+  return `
+    <div class="k-card ${t.done?'k-done':''}" onclick="toggleTask('${t.id}', ${!t.done})">
+      <div class="k-card-name">${t.description}</div>
+      <div class="k-card-foot">
+        <span class="k-person" style="background:${colorForUid(t.assignedTo)}22;color:${colorForUid(t.assignedTo)}">${name}</span>
+        <span class="k-due">${t.done?'✅ feita':'📌 pendente'}</span>
+      </div>
+    </div>`;
 }
 
 async function toggleTask(taskId, done) {
@@ -742,8 +1034,9 @@ async function toggleTask(taskId, done) {
     await awardPoints(POINTS.task, 'task', taskDoc.data().description, '✅');
     celebrateTaskDone(taskDoc.data().description);
   }
-  loadTasks();
+  await loadTasks();
   loadRewards();
+  renderStatsGrid();
 }
 
 function nav(id) {
@@ -754,11 +1047,14 @@ function nav(id) {
   document.getElementById('screen').scrollTop = 0;
 
   document.getElementById('fab').style.display = (id === 'familia' || id === 'recompensas') ? 'none' : 'flex';
-  currentModalType = id === 'tarefas' ? 'tarefa' : 'gasto';
+  if (id === 'tarefas') currentModalType = 'tarefa';
+  else if (id === 'agenda') currentModalType = 'evento';
+  else currentModalType = 'gasto';
 }
 
 function openModal() {
-  document.getElementById(currentModalType === 'tarefa' ? 'modal-tarefa' : 'modal-gasto').classList.add('open');
+  const modalId = currentModalType === 'tarefa' ? 'modal-tarefa' : currentModalType === 'evento' ? 'modal-evento' : 'modal-gasto';
+  document.getElementById(modalId).classList.add('open');
 }
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
@@ -803,6 +1099,159 @@ async function saveTask() {
   document.getElementById('t-desc').value = '';
   showToast('📝 Tarefa criada!');
   loadTasks();
+  renderStatsGrid();
+}
+
+function renderStatsGrid() {
+  const el = document.getElementById('stats-grid');
+  if (!el) return;
+  const total = allExpenses.reduce((s,e) => s + e.value, 0);
+  const pendCount = document.getElementById('k-count-pending') ? document.getElementById('k-count-pending').textContent : '0';
+  const doneCount = document.getElementById('k-count-done') ? document.getElementById('k-count-done').textContent : '0';
+  const totalTasks = parseInt(pendCount) + parseInt(doneCount);
+
+  el.innerHTML = `
+    <div class="stat-card sc-blue">
+      <div class="stat-em">💸</div>
+      <div class="stat-val" style="color:var(--blue);font-size:17px;">R$ ${total.toFixed(0)}</div>
+      <div class="stat-lbl">Gastos do mês</div>
+    </div>
+    <div class="stat-card sc-pink">
+      <div class="stat-em">✅</div>
+      <div class="stat-val" style="color:var(--pink);">${doneCount}/${totalTasks||0}</div>
+      <div class="stat-lbl">Tarefas feitas</div>
+    </div>
+    <div class="stat-card sc-green">
+      <div class="stat-em">📅</div>
+      <div class="stat-val" style="color:var(--green-d);">${allEvents.length}</div>
+      <div class="stat-lbl">Eventos</div>
+    </div>
+    <div class="stat-card sc-yellow">
+      <div class="stat-em">⭐</div>
+      <div class="stat-val" style="color:#D97706;">${householdMembers.length}</div>
+      <div class="stat-lbl">No lar</div>
+    </div>`;
+}
+
+/* ── Agenda / Calendário ── */
+let allEvents = [];
+let calDate = new Date();
+
+async function loadEvents() {
+  const snap = await db.collection('households').doc(householdId).collection('events').orderBy('date','asc').get();
+  allEvents = [];
+  snap.forEach(doc => allEvents.push({ id: doc.id, ...doc.data() }));
+  renderCalendar();
+  renderUpcomingEvents();
+  renderHomeEvents();
+}
+
+async function saveEvent() {
+  const desc = document.getElementById('ev-desc').value.trim();
+  const date = document.getElementById('ev-date').value;
+  const time = document.getElementById('ev-time').value;
+  if (!desc || !date) { showToast('Preencha descrição e data'); return; }
+
+  await db.collection('households').doc(householdId).collection('events').add({
+    description: desc,
+    date: date,
+    time: time || '',
+    userId: currentUser.uid,
+    createdAt: new Date()
+  });
+
+  closeModal('modal-evento');
+  document.getElementById('ev-desc').value = '';
+  document.getElementById('ev-date').value = '';
+  document.getElementById('ev-time').value = '';
+  showToast('📅 Evento criado!');
+  loadEvents();
+}
+
+function changeMonth(delta) {
+  calDate.setMonth(calDate.getMonth() + delta);
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const monthNames = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const year = calDate.getFullYear();
+  const month = calDate.getMonth();
+  document.getElementById('cal-title').textContent = `${monthNames[month]} ${year}`;
+
+  const eventDays = {};
+  allEvents.forEach(e => {
+    const d = new Date(e.date + 'T00:00:00');
+    if (d.getFullYear() === year && d.getMonth() === month) {
+      eventDays[d.getDate()] = colorForUid(e.userId);
+    }
+  });
+
+  const firstDow = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const prevMonthDays = new Date(year, month, 0).getDate();
+  const today = new Date();
+  const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+  let html = '';
+  for (let i = firstDow - 1; i >= 0; i--) html += `<div class="d other">${prevMonthDays - i}</div>`;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = isCurrentMonth && d === today.getDate();
+    const dotColor = eventDays[d];
+    const dot = dotColor ? `<div class="dot" style="background:${dotColor}"></div>` : '';
+    html += `<div class="d ${isToday?'today':''}">${d}${dot}</div>`;
+  }
+  document.getElementById('cal-days').innerHTML = html;
+}
+
+function renderUpcomingEvents() {
+  const todayStr = new Date().toISOString().slice(0,10);
+  const upcoming = allEvents.filter(e => e.date >= todayStr).slice(0, 10);
+  const el = document.getElementById('agenda-events');
+  if (!upcoming.length) { el.innerHTML = '<div class="empty-state">Sem eventos futuros</div>'; return; }
+
+  el.innerHTML = upcoming.map(e => {
+    const d = new Date(e.date + 'T00:00:00');
+    const dayNum = d.getDate();
+    const monthAbbr = d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.','');
+    const weekday = d.toLocaleDateString('pt-BR', { weekday: 'long' });
+    return `
+      <div class="ev-row">
+        <div class="ev-date" style="background:${colorForUid(e.userId)}22">
+          <div class="ev-day" style="color:${colorForUid(e.userId)}">${dayNum}</div>
+          <div class="ev-mon" style="color:${colorForUid(e.userId)}">${monthAbbr}</div>
+        </div>
+        <div class="ev-info">
+          <div class="ev-name">${e.description}</div>
+          <div class="ev-time">${weekday}${e.time ? ' · ' + e.time : ''}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderHomeEvents() {
+  const todayStr = new Date().toISOString().slice(0,10);
+  const upcoming = allEvents.filter(e => e.date >= todayStr).slice(0, 2);
+  const el = document.getElementById('home-events');
+  if (!upcoming.length) { el.innerHTML = '<div class="empty-state">Sem eventos</div>'; return; }
+
+  el.innerHTML = upcoming.map(e => {
+    const d = new Date(e.date + 'T00:00:00');
+    const dayNum = d.getDate();
+    const monthAbbr = d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.','');
+    const weekday = d.toLocaleDateString('pt-BR', { weekday: 'long' });
+    return `
+      <div class="ev-row">
+        <div class="ev-date" style="background:${colorForUid(e.userId)}22">
+          <div class="ev-day" style="color:${colorForUid(e.userId)}">${dayNum}</div>
+          <div class="ev-mon" style="color:${colorForUid(e.userId)}">${monthAbbr}</div>
+        </div>
+        <div class="ev-info">
+          <div class="ev-name">${e.description}</div>
+          <div class="ev-time">${weekday}${e.time ? ' · ' + e.time : ''}</div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 async function awardPoints(points, type, label, icon) {
