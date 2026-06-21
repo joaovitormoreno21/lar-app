@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lar 💑 — Gestão do Casal</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#3B82F6;--blue-d:#1D4ED8;--blue-l:#DBEAFE;
+  --pink:#F472B6;--pink-d:#BE185D;--pink-l:#FCE7F3;
+  --green:#34D399;--green-d:#059669;--green-l:#D1FAE5;
+  --yellow:#FBBF24;--yellow-l:#FEF3C7;
+  --purple:#A855F7;--purple-l:#F3E8FF;
+  --orange:#FB923C;--orange-l:#FFEDD5;
+  --ink:#0F172A;--ink-mid:#475569;--ink-light:#94A3B8;
+  --border:#E2E8F0;--bg:#F0F7FF;--white:#fff;
+}
+body{font-family:'Nunito',sans-serif;background:#CBD5E1;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px 40px;}
+
+.phone{width:390px;min-height:844px;background:var(--bg);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 0 0 10px #1E293B,0 0 0 12px #334155,0 40px 80px rgba(0,0,0,0.4);display:flex;flex-direction:column;}
+.status-bar{background:var(--white);padding:14px 28px 10px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;color:var(--ink);flex-shrink:0;}
+.status-time{font-size:16px;font-weight:900;}
+
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:90px;}
+.screen::-webkit-scrollbar{display:none;}
+
+/* Login screen */
+.login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding:40px 20px;background:var(--bg);}
+.login-logo{font-size:56px;margin-bottom:16px;}
+.login-title{font-size:28px;font-weight:900;color:var(--ink);text-align:center;margin-bottom:8px;}
+.login-sub{font-size:14px;color:var(--ink-light);text-align:center;margin-bottom:40px;font-weight:600;}
+.login-btn{background:var(--blue);color:white;border:none;border-radius:14px;padding:16px 32px;font-size:16px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 0 var(--blue-d);transition:transform 0.1s,box-shadow 0.1s;display:flex;align-items:center;gap:10px;}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 5px 0 var(--blue-d);}
+.login-btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--blue-d);}
+.login-icon{font-size:20px;}
+
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;gap:20px;}
+.spinner{width:40px;height:40px;border:4px solid var(--blue-l);border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Panel system */
+.panel{display:none;}
+.panel.active{display:block;}
+
+.hdr{background:var(--white);padding:16px 20px 14px;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.hdr-title{font-size:20px;font-weight:900;color:var(--ink);}
+.hdr-right{display:flex;align-items:center;gap:10px;}
+.av-pair{display:flex;}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:white;border:2px solid white;}
+.av-j{background:var(--blue);box-shadow:0 2px 0 var(--blue-d);}
+.av-a{background:var(--pink);margin-left:-8px;box-shadow:0 2px 0 var(--pink-d);}
+
+.logout-btn{width:36px;height:36px;border-radius:12px;background:var(--blue-l);border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
+
+.pad{padding:18px 16px;}
+.gap{height:16px;}
+
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;background:var(--white);border-top:2px solid var(--border);display:flex;padding:10px 8px 20px;z-index:50;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border-radius:12px;cursor:pointer;border:none;background:transparent;font-family:'Nunito',sans-serif;transition:background 0.15s;}
+.nav-item.active{background:var(--blue-l);}
+.nav-icon{font-size:22px;line-height:1;}
+.nav-label{font-size:10px;font-weight:800;color:var(--ink-light);}
+.nav-item.active .nav-label{color:var(--blue);}
+.nav-badge{position:absolute;top:4px;right:18px;background:var(--pink);color:white;font-size:9px;font-weight:900;min-width:16px;height:16px;padding:0 4px;border-radius:20px;display:flex;align-items:center;justify-content:center;border:2px solid white;}
+
+.greeting{margin:0 16px 14px;border-radius:20px;background:var(--blue);padding:20px;position:relative;overflow:hidden;box-shadow:0 4px 0 var(--blue-d);}
+.greeting-emoji{position:absolute;right:-10px;top:-10px;font-size:80px;opacity:0.12;line-height:1;}
+.greeting h2{font-size:18px;font-weight:900;color:white;margin-bottom:4px;}
+.greeting p{font-size:13px;font-weight:600;color:rgba(255,255,255,0.82);}
+
+.card{background:var(--white);border-radius:18px;border:2px solid var(--border);padding:18px 20px;margin:0 16px 16px;}
+.card-title{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+
+.exp-row,.task-row,.ev-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:2px dashed #F1F5F9;}
+.exp-row:last-child,.task-row:last-child,.ev-row:last-child{border:none;}
+
+.exp-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.exp-info{flex:1;}
+.exp-name{font-size:14px;font-weight:800;color:var(--ink);}
+.exp-meta{font-size:11px;font-weight:600;color:var(--ink-light);margin-top:1px;}
+.exp-right{text-align:right;}
+.exp-val{font-size:15px;font-weight:900;color:var(--ink);}
+.who-pill{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin-top:3px;}
+.wj{background:var(--blue-l);color:var(--blue-d);}
+.wa{background:var(--pink-l);color:var(--pink-d);}
+
+.t-chk{width:26px;height:26px;border-radius:8px;border:3px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.15s;background:white;}
+.t-chk.done{background:var(--green);border-color:var(--green);color:white;}
+.t-name{font-size:14px;font-weight:700;color:var(--ink);}
+.t-name.done{text-decoration:line-through;color:var(--ink-light);}
+.t-meta{font-size:11px;font-weight:700;margin-top:2px;}
+
+.fab{position:absolute;bottom:82px;right:20px;width:52px;height:52px;border-radius:18px;background:var(--blue);color:white;border:none;font-size:26px;font-weight:300;cursor:pointer;z-index:40;box-shadow:0 4px 0 var(--blue-d);display:flex;align-items:center;justify-content:center;transition:transform 0.1s,box-shadow 0.1s;font-family:'Nunito',sans-serif;}
+.fab:active{transform:translateY(3px);box-shadow:0 1px 0 var(--blue-d);}
+
+.modal-backdrop{position:absolute;inset:0;background:rgba(15,23,42,0.55);z-index:60;display:flex;align-items:flex-end;backdrop-filter:blur(2px);}
+.modal-sheet{background:white;width:100%;border-radius:28px 28px 0 0;padding:20px 20px 36px;animation:slideUp 0.25s cubic-bezier(0.34,1.4,0.64,1);}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;border-radius:4px;background:var(--border);margin:0 auto 18px;}
+.modal-title{font-size:20px;font-weight:900;color:var(--ink);margin-bottom:18px;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:11px;font-weight:800;color:var(--ink-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;}
+.field input,.field select{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--ink);background:white;outline:none;transition:border-color 0.15s;}
+.field input:focus,.field select:focus{border-color:var(--blue);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-save{width:100%;padding:16px;border-radius:14px;background:var(--blue);color:white;border:none;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 var(--blue-d);margin-top:16px;transition:transform 0.1s,box-shadow 0.1s;}
+.btn-save:active{transform:translateY(3px);box-shadow:0 1px 0 var(--blue-d);}
+
+.modal{display:none;}
+.modal.open{display:flex;}
+
+.toast{position:absolute;top:70px;left:20px;right:20px;background:var(--ink);color:white;padding:14px 18px;border-radius:14px;font-size:14px;font-weight:800;z-index:80;display:flex;align-items:center;gap:10px;transform:translateY(-20px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.4,0.64,1);pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+.error-msg{background:#FEE2E2;border:2px solid #FCA5A5;color:#991B1B;padding:14px;border-radius:10px;margin:20px 16px;font-size:14px;font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="phone" id="phone">
+  <div class="status-bar">
+    <div class="status-time" id="time">21:34</div>
+    <div style="font-size:13px;font-weight:700;">📶 🔋</div>
+  </div>
+
+  <div class="screen" id="screen">
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-screen">
+      <div class="login-logo">🏠</div>
+      <div class="login-title">Lar</div>
+      <div class="login-sub">Gestão do casal</div>
+      <button class="login-btn" onclick="loginWithGoogle()">
+        <span class="login-icon">🔐</span>
+        Entrar com Google
+      </button>
+      <div id="login-error" style="margin-top:20px;color:#DC2626;font-weight:700;display:none;text-align:center;"></div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" style="display:none;" class="loading">
+      <div class="spinner"></div>
+      <div style="font-size:14px;font-weight:700;color:var(--ink);">Carregando...</div>
+    </div>
+
+    <!-- ══════════ INÍCIO ══════════ -->
+    <div id="p-home" class="panel active">
+      <div class="hdr">
+        <div class="hdr-title">🏠 Início</div>
+        <div class="hdr-right">
+          <button class="logout-btn" onclick="logout()" title="Sair">🚪</button>
+          <div class="av-pair">
+            <div class="av av-j" id="av-user" title="Seu usuário">J</div>
+          </div>
+        </div>
+      </div>
+      <div class="greeting">
+        <div class="greeting-emoji">💑</div>
+        <h2 id="greeting-name">Boa noite!</h2>
+        <p id="greeting-sub">Bem-vindo ao Lar</p>
+      </div>
+      <div class="card">
+        <div class="card-title">💳 Últimos gastos</div>
+        <div id="home-expenses">
+          <div style="font-size:13px;color:var(--ink-light);text-align:center;padding:20px;">Nenhum gasto ainda</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📝 Tarefas de hoje</div>
+        <div id="home-tasks">
+          <div style="font-size:13px;color:var(--ink-light);text-align:center;padding:20px;">Sem tarefas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ FINANÇAS ══════════ -->
+    <div id="p-financas" class="panel">
+      <div class="hdr">
+        <div class="hdr-title">💰 Finanças</div>
+        <div class="av-pair">
+          <div class="av av-j">J</div>
+          <div class="av av-a">A</div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="text-align:center;margin-bottom:10px;">
+          <div style="font-size:12px;color:var(--ink-light);font-weight:700;">Total do mês</div>
+          <div style="font-size:28px;font-weight:900;color:var(--blue);margin:6px 0;">R$ <span id="total-month">0</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Lançamentos</div>
+        <div id="finance-list">
+          <div style="font-size:13px;color:var(--ink-light);text-align:center;padding:20px;">Nenhum lançamento</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ TAREFAS ══════════ -->
+    <div id="p-tarefas" class="panel">
+      <div class="hdr">
+        <div class="hdr-title">✅ Tarefas</div>
+        <div class="av-pair">
+          <div class="av av-j">J</div>
+          <div class="av av-a">A</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Suas tarefas</div>
+        <div id="tasks-list">
+          <div style="font-size:13px;color:var(--ink-light);text-align:center;padding:20px;">Sem tarefas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ CALENDÁRIO ══════════ -->
+    <div id="p-calendario" class="panel">
+      <div class="hdr">
+        <div class="hdr-title">📅 Calendário</div>
+        <div class="av-pair">
+          <div class="av av-j">J</div>
+          <div class="av av-a">A</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Próximos eventos</div>
+        <div id="events-list">
+          <div style="font-size:13px;color:var(--ink-light);text-align:center;padding:20px;">Sem eventos</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <button class="nav-item active" id="nav-home" onclick="nav('home')">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Início</div>
+    </button>
+    <button class="nav-item" id="nav-financas" onclick="nav('financas')">
+      <div class="nav-icon">💰</div>
+      <div class="nav-label">Finanças</div>
+    </button>
+    <button class="nav-item" id="nav-tarefas" onclick="nav('tarefas')">
+      <div class="nav-icon">✅</div>
+      <div class="nav-label">Tarefas</div>
+    </button>
+    <button class="nav-item" id="nav-calendario" onclick="nav('calendario')">
+      <div class="nav-icon">📅</div>
+      <div class="nav-label">Agenda</div>
+    </button>
+  </div>
+
+  <!-- FAB -->
+  <button class="fab" onclick="openModal()" id="fab">+</button>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">💸 Novo gasto</div>
+      <div class="field">
+        <label>Descrição</label>
+        <input type="text" id="f-desc" placeholder="Ex: Supermercado, Aluguel…">
+      </div>
+      <div class="field">
+        <label>Valor (R$)</label>
+        <input type="number" id="f-val" placeholder="0,00" min="0" step="0.01">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Categoria</label>
+          <select id="f-cat">
+            <option>Alimentação</option>
+            <option>Casa</option>
+            <option>Transporte</option>
+            <option>Saúde</option>
+            <option>Lazer</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Pagamento</label>
+          <select id="f-pay">
+            <option>💳 Crédito</option>
+            <option>⚡ Pix</option>
+            <option>💵 Dinheiro</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-save" onclick="saveExpense()">Salvar 🎉</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">🎉 Gasto salvo!</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAdV1UmSC0Be-xgeCACTYXcEaLw-5FvWlE",
+  authDomain: "lar-app-2cb72.firebaseapp.com",
+  projectId: "lar-app-2cb72",
+  storageBucket: "lar-app-2cb72.firebasestorage.app",
+  messagingSenderId: "561839460040",
+  appId: "1:561839460040:web:8e9f564762fd74e4ec9ffd"
+};
+
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let currentUser = null;
+let coupleId = null;
+
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    currentUser = user;
+    await setupCouple();
+    showPanel('home');
+    updateUI();
+  } else {
+    showLoginScreen();
+  }
+});
+
+async function loginWithGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    const result = await auth.signInWithPopup(provider);
+    currentUser = result.user;
+  } catch (error) {
+    document.getElementById('login-error').textContent = 'Erro ao fazer login: ' + error.message;
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+async function setupCouple() {
+  const userEmail = currentUser.email;
+  const userName = currentUser.displayName || 'Usuário';
+  document.getElementById('greeting-name').textContent = `Boa noite, ${userName.split(' ')[0]}!`;
+  document.getElementById('av-user').textContent = userName[0].toUpperCase();
+  
+  try {
+    // Procura se o usuário já existe
+    let userDoc = await db.collection('users').doc(currentUser.uid).get();
+    
+    if (!userDoc.exists) {
+      // Primeiro login - criar usuário e casal
+      coupleId = 'couple_' + Math.random().toString(36).substr(2, 9);
+      await db.collection('users').doc(currentUser.uid).set({
+        email: userEmail,
+        name: userName,
+        coupleId: coupleId,
+        createdAt: new Date()
+      });
+      await db.collection('couples').doc(coupleId).set({
+        createdAt: new Date(),
+        members: [currentUser.uid]
+      });
+    } else {
+      coupleId = userDoc.data().coupleId;
+    }
+  } catch (error) {
+    console.error('Erro ao configurar casal:', error);
+  }
+}
+
+async function saveExpense() {
+  const desc = document.getElementById('f-desc').value.trim();
+  const val = parseFloat(document.getElementById('f-val').value);
+  const cat = document.getElementById('f-cat').value;
+  const pay = document.getElementById('f-pay').value;
+  
+  if (!desc || !val) return;
+  
+  try {
+    await db.collection('couples').doc(coupleId).collection('expenses').add({
+      description: desc,
+      value: val,
+      category: cat,
+      payment: pay,
+      userId: currentUser.uid,
+      userName: currentUser.displayName,
+      createdAt: new Date()
+    });
+    
+    closeModal();
+    document.getElementById('f-desc').value = '';
+    document.getElementById('f-val').value = '';
+    showToast('🎉 Gasto salvo!');
+    updateUI();
+  } catch (error) {
+    console.error('Erro ao salvar gasto:', error);
+  }
+}
+
+async function updateUI() {
+  if (!coupleId) return;
+  
+  // Carregar gastos
+  try {
+    const expensesSnapshot = await db.collection('couples').doc(coupleId).collection('expenses').orderBy('createdAt', 'desc').limit(5).get();
+    const expensesList = document.getElementById('home-expenses');
+    
+    if (expensesSnapshot.empty) {
+      expensesList.innerHTML = '<div style="font-size:13px;color:var(--ink-light);text-align:center;padding:20px;">Nenhum gasto ainda</div>';
+    } else {
+      let html = '';
+      expensesSnapshot.forEach(doc => {
+        const exp = doc.data();
+        const isCurrentUser = exp.userId === currentUser.uid;
+        html += `
+          <div class="exp-row">
+            <div class="exp-ic">💳</div>
+            <div class="exp-info">
+              <div class="exp-name">${exp.description}</div>
+              <div class="exp-meta">${exp.category}</div>
+            </div>
+            <div class="exp-right">
+              <div class="exp-val">R$ ${exp.value.toFixed(2)}</div>
+              <span class="who-pill ${isCurrentUser ? 'wj' : 'wa'}">${isCurrentUser ? 'Você' : exp.userName}</span>
+            </div>
+          </div>
+        `;
+      });
+      expensesList.innerHTML = html;
+    }
+  } catch (error) {
+    console.error('Erro ao carregar gastos:', error);
+  }
+}
+
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('p-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('nav-' + id).classList.add('active');
+  document.getElementById('screen').scrollTop = 0;
+}
+
+function nav(id) {
+  showPanel(id);
+}
+
+function openModal() {
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function showLoginScreen() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('loading-screen').style.display = 'none';
+  document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+  document.getElementById('fab').style.display = 'none';
+  document.querySelector('.bottom-nav').style.display = 'none';
+}
+
+function logout() {
+  if (confirm('Desconectar?')) {
+    auth.signOut();
+  }
+}
+
+// Update time
+setInterval(() => {
+  const now = new Date();
+  document.getElementById('time').textContent = now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+}, 1000);
+</script>
+</body>
+</html>
