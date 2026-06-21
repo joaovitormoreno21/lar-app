@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lar 💑 — Gestão do Casal</title>
+<title>Lar — Gestão do Casal</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -14,242 +14,243 @@
   --yellow:#FBBF24;--yellow-l:#FEF3C7;
   --purple:#A855F7;--purple-l:#F3E8FF;
   --orange:#FB923C;--orange-l:#FFEDD5;
+  --red:#EF4444;--red-l:#FEE2E2;
   --ink:#0F172A;--ink-mid:#475569;--ink-light:#94A3B8;
   --border:#E2E8F0;--bg:#F0F7FF;--white:#fff;
 }
-body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;min-height:100dvh;}
+html,body{height:100%;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);}
 
-.phone{width:100%;max-width:600px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--bg);position:relative;display:flex;flex-direction:column;}
+#app{width:100%;max-width:600px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--bg);position:relative;display:flex;flex-direction:column;}
 
-.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:90px;}
-
-/* Login screen */
-.login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding:40px 20px;background:var(--bg);}
+/* ── Login screen ── */
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:40px 20px;}
 .login-logo{font-size:56px;margin-bottom:16px;}
 .login-title{font-size:28px;font-weight:900;color:var(--ink);text-align:center;margin-bottom:8px;}
 .login-sub{font-size:14px;color:var(--ink-light);text-align:center;margin-bottom:40px;font-weight:600;}
 .login-btn{background:var(--blue);color:white;border:none;border-radius:14px;padding:16px 32px;font-size:16px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 0 var(--blue-d);transition:transform 0.1s,box-shadow 0.1s;display:flex;align-items:center;gap:10px;}
-.login-btn:hover{transform:translateY(-1px);box-shadow:0 5px 0 var(--blue-d);}
 .login-btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--blue-d);}
 .login-icon{font-size:20px;}
+.error-msg{background:var(--red-l);border:2px solid #FCA5A5;color:#991B1B;padding:14px;border-radius:10px;margin-top:20px;font-size:13px;font-weight:700;max-width:320px;text-align:center;}
 
-.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;gap:20px;}
+/* ── Loading ── */
+#loading-screen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;gap:20px;}
 .spinner{width:40px;height:40px;border:4px solid var(--blue-l);border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Panel system */
+/* ── App shell ── */
+#app-shell{display:none;flex-direction:column;flex:1;min-height:100vh;min-height:100dvh;}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:90px;}
+
 .panel{display:none;}
 .panel.active{display:block;}
 
-.hdr{background:var(--white);padding:16px 20px 14px;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.hdr{background:var(--white);padding:16px 20px 14px;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
 .hdr-title{font-size:20px;font-weight:900;color:var(--ink);}
 .hdr-right{display:flex;align-items:center;gap:10px;}
 .av-pair{display:flex;}
-.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:white;border:2px solid white;}
-.av-j{background:var(--blue);box-shadow:0 2px 0 var(--blue-d);}
-.av-a{background:var(--pink);margin-left:-8px;box-shadow:0 2px 0 var(--pink-d);}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:white;border:2px solid white;flex-shrink:0;}
+.logout-btn{width:36px;height:36px;border-radius:12px;background:var(--blue-l);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
 
-.logout-btn{width:36px;height:36px;border-radius:12px;background:var(--blue-l);border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
-
-.pad{padding:18px 16px;}
-.gap{height:16px;}
-
-.bottom-nav{position:absolute;bottom:0;left:0;right:0;background:var(--white);border-top:2px solid var(--border);display:flex;padding:10px 8px 20px;z-index:50;}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;background:var(--white);border-top:2px solid var(--border);display:flex;padding:10px 8px calc(10px + env(safe-area-inset-bottom));z-index:50;}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border-radius:12px;cursor:pointer;border:none;background:transparent;font-family:'Nunito',sans-serif;transition:background 0.15s;}
 .nav-item.active{background:var(--blue-l);}
 .nav-icon{font-size:22px;line-height:1;}
 .nav-label{font-size:10px;font-weight:800;color:var(--ink-light);}
 .nav-item.active .nav-label{color:var(--blue);}
-.nav-badge{position:absolute;top:4px;right:18px;background:var(--pink);color:white;font-size:9px;font-weight:900;min-width:16px;height:16px;padding:0 4px;border-radius:20px;display:flex;align-items:center;justify-content:center;border:2px solid white;}
 
-.greeting{margin:0 16px 14px;border-radius:20px;background:var(--blue);padding:20px;position:relative;overflow:hidden;box-shadow:0 4px 0 var(--blue-d);}
+.greeting{margin:16px 16px 14px;border-radius:20px;background:var(--blue);padding:20px;position:relative;overflow:hidden;box-shadow:0 4px 0 var(--blue-d);}
 .greeting-emoji{position:absolute;right:-10px;top:-10px;font-size:80px;opacity:0.12;line-height:1;}
 .greeting h2{font-size:18px;font-weight:900;color:white;margin-bottom:4px;}
 .greeting p{font-size:13px;font-weight:600;color:rgba(255,255,255,0.82);}
 
 .card{background:var(--white);border-radius:18px;border:2px solid var(--border);padding:18px 20px;margin:0 16px 16px;}
 .card-title{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.empty-state{font-size:13px;color:var(--ink-light);text-align:center;padding:20px;font-weight:600;}
 
-.exp-row,.task-row,.ev-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:2px dashed #F1F5F9;}
-.exp-row:last-child,.task-row:last-child,.ev-row:last-child{border:none;}
-
-.exp-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.exp-info{flex:1;}
+.exp-row,.task-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:2px dashed #F1F5F9;}
+.exp-row:last-child,.task-row:last-child{border:none;}
+.exp-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--blue-l);}
+.exp-info{flex:1;min-width:0;}
 .exp-name{font-size:14px;font-weight:800;color:var(--ink);}
 .exp-meta{font-size:11px;font-weight:600;color:var(--ink-light);margin-top:1px;}
-.exp-right{text-align:right;}
+.exp-right{text-align:right;flex-shrink:0;}
 .exp-val{font-size:15px;font-weight:900;color:var(--ink);}
-.who-pill{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin-top:3px;}
-.wj{background:var(--blue-l);color:var(--blue-d);}
-.wa{background:var(--pink-l);color:var(--pink-d);}
+.who-pill{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin-top:3px;background:var(--blue-l);color:var(--blue-d);}
 
 .t-chk{width:26px;height:26px;border-radius:8px;border:3px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.15s;background:white;}
 .t-chk.done{background:var(--green);border-color:var(--green);color:white;}
 .t-name{font-size:14px;font-weight:700;color:var(--ink);}
 .t-name.done{text-decoration:line-through;color:var(--ink-light);}
-.t-meta{font-size:11px;font-weight:700;margin-top:2px;}
+.t-meta{font-size:11px;font-weight:700;margin-top:2px;color:var(--ink-light);}
 
-.fab{position:absolute;bottom:82px;right:20px;width:52px;height:52px;border-radius:18px;background:var(--blue);color:white;border:none;font-size:26px;font-weight:300;cursor:pointer;z-index:40;box-shadow:0 4px 0 var(--blue-d);display:flex;align-items:center;justify-content:center;transition:transform 0.1s,box-shadow 0.1s;font-family:'Nunito',sans-serif;}
-.fab:active{transform:translateY(3px);box-shadow:0 1px 0 var(--blue-d);}
+.fab{position:fixed;bottom:90px;left:50%;transform:translateX(calc(-50% + 252px));width:52px;height:52px;border-radius:18px;background:var(--blue);color:white;border:none;font-size:26px;font-weight:300;cursor:pointer;z-index:40;box-shadow:0 4px 0 var(--blue-d);display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;}
+.fab:active{transform:translateX(calc(-50% + 252px)) translateY(3px);box-shadow:0 1px 0 var(--blue-d);}
+@media (max-width:600px){.fab{transform:translateX(0);right:20px;left:auto;}.fab:active{transform:translateY(3px);}}
 
-.modal-backdrop{position:absolute;inset:0;background:rgba(15,23,42,0.55);z-index:60;display:flex;align-items:flex-end;backdrop-filter:blur(2px);}
-.modal-sheet{background:white;width:100%;border-radius:28px 28px 0 0;padding:20px 20px 36px;animation:slideUp 0.25s cubic-bezier(0.34,1.4,0.64,1);}
+.modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,0.55);z-index:100;align-items:flex-end;justify-content:center;}
+.modal.open{display:flex;}
+.modal-sheet{background:white;width:100%;max-width:600px;border-radius:28px 28px 0 0;padding:20px 20px calc(36px + env(safe-area-inset-bottom));animation:slideUp 0.25s cubic-bezier(0.34,1.4,0.64,1);max-height:85vh;overflow-y:auto;}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .modal-handle{width:36px;height:4px;border-radius:4px;background:var(--border);margin:0 auto 18px;}
 .modal-title{font-size:20px;font-weight:900;color:var(--ink);margin-bottom:18px;}
 .field{margin-bottom:12px;}
 .field label{display:block;font-size:11px;font-weight:800;color:var(--ink-mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;}
-.field input,.field select{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--ink);background:white;outline:none;transition:border-color 0.15s;}
+.field input,.field select{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--ink);background:white;outline:none;}
 .field input:focus,.field select:focus{border-color:var(--blue);}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.btn-save{width:100%;padding:16px;border-radius:14px;background:var(--blue);color:white;border:none;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 var(--blue-d);margin-top:16px;transition:transform 0.1s,box-shadow 0.1s;}
+.btn-save{width:100%;padding:16px;border-radius:14px;background:var(--blue);color:white;border:none;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 var(--blue-d);margin-top:16px;}
 .btn-save:active{transform:translateY(3px);box-shadow:0 1px 0 var(--blue-d);}
+.btn-cancel{width:100%;padding:14px;border-radius:14px;background:var(--white);color:var(--ink-mid);border:2px solid var(--border);font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px;}
 
-.modal{display:none;}
-.modal.open{display:flex;}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-20px);width:calc(100% - 40px);max-width:560px;background:var(--ink);color:white;padding:14px 18px;border-radius:14px;font-size:14px;font-weight:800;z-index:200;display:flex;align-items:center;gap:10px;opacity:0;transition:all 0.3s cubic-bezier(0.34,1.4,0.64,1);pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 
-.toast{position:absolute;top:70px;left:20px;right:20px;background:var(--ink);color:white;padding:14px 18px;border-radius:14px;font-size:14px;font-weight:800;z-index:80;display:flex;align-items:center;gap:10px;transform:translateY(-20px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.4,0.64,1);pointer-events:none;}
-.toast.show{transform:translateY(0);opacity:1;}
-
-.error-msg{background:#FEE2E2;border:2px solid #FCA5A5;color:#991B1B;padding:14px;border-radius:10px;margin:20px 16px;font-size:14px;font-weight:700;}
+/* ── Família ── */
+.member-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:2px dashed #F1F5F9;}
+.member-row:last-child{border:none;}
+.member-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:white;flex-shrink:0;}
+.member-info{flex:1;min-width:0;}
+.member-name{font-size:14px;font-weight:800;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.member-email{font-size:11px;font-weight:600;color:var(--ink-light);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.member-you{font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;background:var(--green-l);color:var(--green-d);flex-shrink:0;}
+.invite-code-box{background:var(--blue-l);border-radius:14px;padding:16px;text-align:center;margin-bottom:16px;}
+.invite-code-label{font-size:11px;font-weight:800;color:var(--blue-d);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;}
+.invite-code{font-size:28px;font-weight:900;color:var(--blue-d);letter-spacing:4px;margin-bottom:10px;}
+.copy-btn{background:var(--blue);color:white;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
 </style>
 </head>
 <body>
 
-<div class="phone" id="phone">
-  <div class="screen" id="screen">
-    <!-- Login Screen -->
-    <div id="login-screen" class="login-screen">
-      <div class="login-logo">🏠</div>
-      <div class="login-title">Lar</div>
-      <div class="login-sub">Gestão do casal</div>
-      <button class="login-btn" onclick="loginWithGoogle()">
-        <span class="login-icon">🔐</span>
-        Entrar com Google
-      </button>
-      <div id="login-error" style="margin-top:20px;color:#DC2626;font-weight:700;display:none;text-align:center;"></div>
-    </div>
+<div id="app">
 
-    <!-- Loading Screen -->
-    <div id="loading-screen" style="display:none;" class="loading">
-      <div class="spinner"></div>
-      <div style="font-size:14px;font-weight:700;color:var(--ink);">Carregando...</div>
-    </div>
+  <!-- LOGIN -->
+  <div id="login-screen">
+    <div class="login-logo">🏠</div>
+    <div class="login-title">Lar</div>
+    <div class="login-sub">Gestão do casal</div>
+    <button class="login-btn" onclick="loginWithGoogle()">
+      <span class="login-icon">🔐</span>
+      Entrar com Google
+    </button>
+    <div id="login-error" class="error-msg" style="display:none;"></div>
+  </div>
 
-    <!-- ══════════ INÍCIO ══════════ -->
-    <div id="p-home" class="panel active">
-      <div class="hdr">
-        <div class="hdr-title">🏠 Início</div>
-        <div class="hdr-right">
-          <button class="logout-btn" onclick="logout()" title="Sair">🚪</button>
-          <div class="av-pair">
-            <div class="av av-j" id="av-user" title="Seu usuário">J</div>
+  <!-- LOADING -->
+  <div id="loading-screen">
+    <div class="spinner"></div>
+    <div style="font-size:14px;font-weight:700;color:var(--ink);">Carregando...</div>
+  </div>
+
+  <!-- APP SHELL -->
+  <div id="app-shell">
+    <div class="screen" id="screen">
+
+      <!-- INÍCIO -->
+      <div id="p-home" class="panel active">
+        <div class="hdr">
+          <div class="hdr-title">🏠 Início</div>
+          <div class="hdr-right">
+            <button class="logout-btn" onclick="logout()" title="Sair">🚪</button>
+            <div class="av-pair" id="home-avatars"></div>
           </div>
         </div>
-      </div>
-      <div class="greeting">
-        <div class="greeting-emoji">💑</div>
-        <h2 id="greeting-name">Boa noite!</h2>
-        <p id="greeting-sub">Bem-vindo ao Lar</p>
-      </div>
-      <div class="card">
-        <div class="card-title">💳 Últimos gastos</div>
-        <div id="home-expenses">
-          <div style="font-size:13px;color:var(--ink-light);text-align:center;padding:20px;">Nenhum gasto ainda</div>
+        <div class="greeting">
+          <div class="greeting-emoji">💑</div>
+          <h2 id="greeting-name">Olá!</h2>
+          <p id="greeting-sub">Bem-vindo ao Lar</p>
+        </div>
+        <div class="card">
+          <div class="card-title">💳 Últimos gastos</div>
+          <div id="home-expenses"><div class="empty-state">Nenhum gasto ainda</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">📝 Tarefas</div>
+          <div id="home-tasks"><div class="empty-state">Sem tarefas</div></div>
         </div>
       </div>
-      <div class="card">
-        <div class="card-title">📝 Tarefas de hoje</div>
-        <div id="home-tasks">
-          <div style="font-size:13px;color:var(--ink-light);text-align:center;padding:20px;">Sem tarefas</div>
-        </div>
-      </div>
-    </div>
 
-    <!-- ══════════ FINANÇAS ══════════ -->
-    <div id="p-financas" class="panel">
-      <div class="hdr">
-        <div class="hdr-title">💰 Finanças</div>
-        <div class="av-pair">
-          <div class="av av-j">J</div>
-          <div class="av av-a">A</div>
+      <!-- FINANÇAS -->
+      <div id="p-financas" class="panel">
+        <div class="hdr">
+          <div class="hdr-title">💰 Finanças</div>
+          <div class="av-pair" id="fin-avatars"></div>
         </div>
-      </div>
-      <div class="card">
-        <div style="text-align:center;margin-bottom:10px;">
+        <div class="card" style="text-align:center;">
           <div style="font-size:12px;color:var(--ink-light);font-weight:700;">Total do mês</div>
-          <div style="font-size:28px;font-weight:900;color:var(--blue);margin:6px 0;">R$ <span id="total-month">0</span></div>
+          <div style="font-size:28px;font-weight:900;color:var(--blue);margin:6px 0;">R$ <span id="total-month">0,00</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Lançamentos</div>
+          <div id="finance-list"><div class="empty-state">Nenhum lançamento</div></div>
         </div>
       </div>
-      <div class="card">
-        <div class="card-title">Lançamentos</div>
-        <div id="finance-list">
-          <div style="font-size:13px;color:var(--ink-light);text-align:center;padding:20px;">Nenhum lançamento</div>
+
+      <!-- TAREFAS -->
+      <div id="p-tarefas" class="panel">
+        <div class="hdr">
+          <div class="hdr-title">✅ Tarefas</div>
+          <div class="av-pair" id="task-avatars"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Todas as tarefas</div>
+          <div id="tasks-list"><div class="empty-state">Sem tarefas</div></div>
         </div>
       </div>
+
+      <!-- FAMÍLIA -->
+      <div id="p-familia" class="panel">
+        <div class="hdr">
+          <div class="hdr-title">👨‍👩‍👧 Família</div>
+        </div>
+        <div class="card">
+          <div class="invite-code-box">
+            <div class="invite-code-label">Código de convite do seu lar</div>
+            <div class="invite-code" id="invite-code">------</div>
+            <button class="copy-btn" onclick="copyInviteCode()">Copiar código</button>
+          </div>
+          <div style="font-size:12px;color:var(--ink-light);font-weight:600;text-align:center;">
+            Compartilhe este código com seu parceiro(a) para conectar as contas e compartilhar os dados
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Membros do lar</div>
+          <div id="members-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Entrar em outro lar</div>
+          <div class="field">
+            <label>Código de convite</label>
+            <input type="text" id="join-code" placeholder="Ex: ABC123" style="text-transform:uppercase;">
+          </div>
+          <button class="btn-save" onclick="joinHousehold()">Conectar ao lar</button>
+        </div>
+      </div>
+
     </div>
 
-    <!-- ══════════ TAREFAS ══════════ -->
-    <div id="p-tarefas" class="panel">
-      <div class="hdr">
-        <div class="hdr-title">✅ Tarefas</div>
-        <div class="av-pair">
-          <div class="av av-j">J</div>
-          <div class="av av-a">A</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Suas tarefas</div>
-        <div id="tasks-list">
-          <div style="font-size:13px;color:var(--ink-light);text-align:center;padding:20px;">Sem tarefas</div>
-        </div>
-      </div>
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <button class="nav-item active" id="nav-home" onclick="nav('home')">
+        <div class="nav-icon">🏠</div><div class="nav-label">Início</div>
+      </button>
+      <button class="nav-item" id="nav-financas" onclick="nav('financas')">
+        <div class="nav-icon">💰</div><div class="nav-label">Finanças</div>
+      </button>
+      <button class="nav-item" id="nav-tarefas" onclick="nav('tarefas')">
+        <div class="nav-icon">✅</div><div class="nav-label">Tarefas</div>
+      </button>
+      <button class="nav-item" id="nav-familia" onclick="nav('familia')">
+        <div class="nav-icon">👨‍👩‍👧</div><div class="nav-label">Família</div>
+      </button>
     </div>
 
-    <!-- ══════════ CALENDÁRIO ══════════ -->
-    <div id="p-calendario" class="panel">
-      <div class="hdr">
-        <div class="hdr-title">📅 Calendário</div>
-        <div class="av-pair">
-          <div class="av av-j">J</div>
-          <div class="av av-a">A</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Próximos eventos</div>
-        <div id="events-list">
-          <div style="font-size:13px;color:var(--ink-light);text-align:center;padding:20px;">Sem eventos</div>
-        </div>
-      </div>
-    </div>
-
+    <!-- FAB -->
+    <button class="fab" id="fab" onclick="openModal()">+</button>
   </div>
 
-  <!-- Bottom Nav -->
-  <div class="bottom-nav">
-    <button class="nav-item active" id="nav-home" onclick="nav('home')">
-      <div class="nav-icon">🏠</div>
-      <div class="nav-label">Início</div>
-    </button>
-    <button class="nav-item" id="nav-financas" onclick="nav('financas')">
-      <div class="nav-icon">💰</div>
-      <div class="nav-label">Finanças</div>
-    </button>
-    <button class="nav-item" id="nav-tarefas" onclick="nav('tarefas')">
-      <div class="nav-icon">✅</div>
-      <div class="nav-label">Tarefas</div>
-    </button>
-    <button class="nav-item" id="nav-calendario" onclick="nav('calendario')">
-      <div class="nav-icon">📅</div>
-      <div class="nav-label">Agenda</div>
-    </button>
-  </div>
-
-  <!-- FAB -->
-  <button class="fab" onclick="openModal()" id="fab">+</button>
-
-  <!-- Modal -->
-  <div class="modal" id="modal">
+  <!-- MODAL: novo gasto -->
+  <div class="modal" id="modal-gasto">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
       <div class="modal-title">💸 Novo gasto</div>
@@ -265,28 +266,41 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;min-h
         <div class="field">
           <label>Categoria</label>
           <select id="f-cat">
-            <option>Alimentação</option>
-            <option>Casa</option>
-            <option>Transporte</option>
-            <option>Saúde</option>
-            <option>Lazer</option>
-            <option>Outro</option>
+            <option>Alimentação</option><option>Casa</option><option>Transporte</option>
+            <option>Saúde</option><option>Lazer</option><option>Outro</option>
           </select>
         </div>
         <div class="field">
           <label>Pagamento</label>
           <select id="f-pay">
-            <option>💳 Crédito</option>
-            <option>⚡ Pix</option>
-            <option>💵 Dinheiro</option>
+            <option>Crédito</option><option>Débito</option><option>Pix</option><option>Dinheiro</option>
           </select>
         </div>
       </div>
-      <button class="btn-save" onclick="saveExpense()">Salvar 🎉</button>
+      <button class="btn-save" onclick="saveExpense()">Salvar</button>
+      <button class="btn-cancel" onclick="closeModal('modal-gasto')">Cancelar</button>
     </div>
   </div>
 
-  <div class="toast" id="toast">🎉 Gasto salvo!</div>
+  <!-- MODAL: nova tarefa -->
+  <div class="modal" id="modal-tarefa">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">📝 Nova tarefa</div>
+      <div class="field">
+        <label>O que precisa ser feito?</label>
+        <input type="text" id="t-desc" placeholder="Ex: Pagar conta de luz">
+      </div>
+      <div class="field">
+        <label>Responsável</label>
+        <select id="t-who"></select>
+      </div>
+      <button class="btn-save" onclick="saveTask()">Salvar</button>
+      <button class="btn-cancel" onclick="closeModal('modal-tarefa')">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
@@ -294,12 +308,6 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;min-h
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 
 <script>
-if (typeof firebase === 'undefined') {
-  document.getElementById('login-error').textContent = 'Erro: Firebase não carregou. Verifique sua conexão e recarregue a página.';
-  document.getElementById('login-error').style.display = 'block';
-  throw new Error('Firebase SDK não carregado');
-}
-
 const firebaseConfig = {
   apiKey: "AIzaSyAdV1UmSC0Be-xgeCACTYXcEaLw-5FvWlE",
   authDomain: "lar-app-2cb72.firebaseapp.com",
@@ -309,21 +317,50 @@ const firebaseConfig = {
   appId: "1:561839460040:web:8e9f564762fd74e4ec9ffd"
 };
 
-const app = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
 let currentUser = null;
-let coupleId = null;
+let householdId = null;
+let householdMembers = [];
+let currentModalType = 'gasto';
+
+const AVATAR_COLORS = ['#3B82F6','#F472B6','#A855F7','#FB923C','#34D399','#FBBF24'];
+function colorForUid(uid){
+  let hash = 0;
+  for(let i=0;i<uid.length;i++){ hash = uid.charCodeAt(i) + ((hash<<5)-hash); }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
+function showScreen(id) {
+  document.getElementById('login-screen').style.display = id === 'login' ? 'flex' : 'none';
+  document.getElementById('loading-screen').style.display = id === 'loading' ? 'flex' : 'none';
+  document.getElementById('app-shell').style.display = id === 'app' ? 'flex' : 'none';
+}
+
+showScreen('loading');
 
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     currentUser = user;
-    await setupCouple();
-    showPanel('home');
-    updateUI();
+    showScreen('loading');
+    try {
+      await setupHousehold();
+      renderGreeting();
+      await loadEverything();
+      showScreen('app');
+    } catch (err) {
+      console.error('Erro ao iniciar app:', err);
+      showScreen('login');
+      const box = document.getElementById('login-error');
+      box.textContent = 'Erro ao carregar dados: ' + err.message;
+      box.style.display = 'block';
+    }
   } else {
-    showLoginScreen();
+    currentUser = null;
+    householdId = null;
+    showScreen('login');
   }
 });
 
@@ -332,135 +369,294 @@ async function loginWithGoogle() {
   const errorBox = document.getElementById('login-error');
   errorBox.style.display = 'none';
   try {
-    const result = await auth.signInWithPopup(provider);
-    currentUser = result.user;
+    await auth.signInWithPopup(provider);
   } catch (error) {
     console.error('Erro de login:', error.code, error.message);
-    let msg = 'Erro ao fazer login: ' + error.code;
+    let msg = 'Erro ao fazer login (' + error.code + ')';
     if (error.code === 'auth/unauthorized-domain') {
-      msg = 'Este site não está autorizado no Firebase ainda. Vá em Firebase → Authentication → Settings → Authorized domains e adicione este domínio.';
+      msg = 'Este domínio não está autorizado no Firebase. Vá em Authentication → Settings → Authorized domains.';
     } else if (error.code === 'auth/popup-blocked') {
-      msg = 'O navegador bloqueou a janela de login. Permita pop-ups para este site e tente de novo.';
+      msg = 'O navegador bloqueou o pop-up de login. Permita pop-ups e tente novamente.';
+    } else if (error.code === 'auth/popup-closed-by-user') {
+      msg = 'Login cancelado.';
     }
     errorBox.textContent = msg;
     errorBox.style.display = 'block';
   }
 }
 
-async function setupCouple() {
-  const userEmail = currentUser.email;
-  const userName = currentUser.displayName || 'Usuário';
-  document.getElementById('greeting-name').textContent = `Boa noite, ${userName.split(' ')[0]}!`;
-  document.getElementById('av-user').textContent = userName[0].toUpperCase();
-  
-  try {
-    // Procura se o usuário já existe
-    let userDoc = await db.collection('users').doc(currentUser.uid).get();
-    
-    if (!userDoc.exists) {
-      // Primeiro login - criar usuário e casal
-      coupleId = 'couple_' + Math.random().toString(36).substr(2, 9);
-      await db.collection('users').doc(currentUser.uid).set({
-        email: userEmail,
-        name: userName,
-        coupleId: coupleId,
-        createdAt: new Date()
-      });
-      await db.collection('couples').doc(coupleId).set({
-        createdAt: new Date(),
-        members: [currentUser.uid]
-      });
-    } else {
-      coupleId = userDoc.data().coupleId;
-    }
-  } catch (error) {
-    console.error('Erro ao configurar casal:', error);
-  }
+function logout() {
+  if (confirm('Deseja sair?')) auth.signOut();
 }
 
-async function saveExpense() {
-  const desc = document.getElementById('f-desc').value.trim();
-  const val = parseFloat(document.getElementById('f-val').value);
-  const cat = document.getElementById('f-cat').value;
-  const pay = document.getElementById('f-pay').value;
-  
-  if (!desc || !val) return;
-  
-  try {
-    await db.collection('couples').doc(coupleId).collection('expenses').add({
-      description: desc,
-      value: val,
-      category: cat,
-      payment: pay,
-      userId: currentUser.uid,
-      userName: currentUser.displayName,
+function generateInviteCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for(let i=0;i<6;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
+async function setupHousehold() {
+  const userRef = db.collection('users').doc(currentUser.uid);
+  const userDoc = await userRef.get();
+
+  if (userDoc.exists && userDoc.data().householdId) {
+    householdId = userDoc.data().householdId;
+  } else {
+    householdId = 'h_' + Math.random().toString(36).substr(2, 9);
+    const inviteCode = generateInviteCode();
+    await db.collection('households').doc(householdId).set({
+      createdAt: new Date(),
+      inviteCode: inviteCode,
+      memberIds: [currentUser.uid]
+    });
+    await userRef.set({
+      email: currentUser.email,
+      name: currentUser.displayName || 'Usuário',
+      photoURL: currentUser.photoURL || '',
+      householdId: householdId,
       createdAt: new Date()
     });
-    
-    closeModal();
-    document.getElementById('f-desc').value = '';
-    document.getElementById('f-val').value = '';
-    showToast('🎉 Gasto salvo!');
-    updateUI();
-  } catch (error) {
-    console.error('Erro ao salvar gasto:', error);
   }
+
+  if (!userDoc.exists) {
+    await userRef.set({
+      email: currentUser.email,
+      name: currentUser.displayName || 'Usuário',
+      photoURL: currentUser.photoURL || '',
+      householdId: householdId,
+      createdAt: new Date()
+    }, { merge: true });
+  }
+
+  await loadHouseholdMembers();
 }
 
-async function updateUI() {
-  if (!coupleId) return;
-  
-  // Carregar gastos
-  try {
-    const expensesSnapshot = await db.collection('couples').doc(coupleId).collection('expenses').orderBy('createdAt', 'desc').limit(5).get();
-    const expensesList = document.getElementById('home-expenses');
-    
-    if (expensesSnapshot.empty) {
-      expensesList.innerHTML = '<div style="font-size:13px;color:var(--ink-light);text-align:center;padding:20px;">Nenhum gasto ainda</div>';
-    } else {
-      let html = '';
-      expensesSnapshot.forEach(doc => {
-        const exp = doc.data();
-        const isCurrentUser = exp.userId === currentUser.uid;
-        html += `
-          <div class="exp-row">
-            <div class="exp-ic">💳</div>
-            <div class="exp-info">
-              <div class="exp-name">${exp.description}</div>
-              <div class="exp-meta">${exp.category}</div>
-            </div>
-            <div class="exp-right">
-              <div class="exp-val">R$ ${exp.value.toFixed(2)}</div>
-              <span class="who-pill ${isCurrentUser ? 'wj' : 'wa'}">${isCurrentUser ? 'Você' : exp.userName}</span>
-            </div>
-          </div>
-        `;
-      });
-      expensesList.innerHTML = html;
+async function loadHouseholdMembers() {
+  const hhDoc = await db.collection('households').doc(householdId).get();
+  const memberIds = hhDoc.data().memberIds || [];
+  document.getElementById('invite-code').textContent = hhDoc.data().inviteCode || '------';
+
+  householdMembers = [];
+  for (const uid of memberIds) {
+    const uDoc = await db.collection('users').doc(uid).get();
+    if (uDoc.exists) {
+      householdMembers.push({ uid, ...uDoc.data() });
     }
-  } catch (error) {
-    console.error('Erro ao carregar gastos:', error);
+  }
+  renderMembers();
+  renderAvatars();
+  renderTaskWhoOptions();
+}
+
+function renderMembers() {
+  const list = document.getElementById('members-list');
+  list.innerHTML = householdMembers.map(m => `
+    <div class="member-row">
+      <div class="member-av" style="background:${colorForUid(m.uid)}">${(m.name||'?')[0].toUpperCase()}</div>
+      <div class="member-info">
+        <div class="member-name">${m.name}</div>
+        <div class="member-email">${m.email}</div>
+      </div>
+      ${m.uid === currentUser.uid ? '<span class="member-you">Você</span>' : ''}
+    </div>
+  `).join('');
+}
+
+function renderAvatars() {
+  const html = householdMembers.slice(0,3).map((m,i) => `
+    <div class="av" style="background:${colorForUid(m.uid)};margin-left:${i>0?'-8px':'0'}">${(m.name||'?')[0].toUpperCase()}</div>
+  `).join('');
+  ['home-avatars','fin-avatars','task-avatars'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  });
+}
+
+function renderTaskWhoOptions() {
+  const sel = document.getElementById('t-who');
+  sel.innerHTML = householdMembers.map(m => `<option value="${m.uid}">${m.name}${m.uid===currentUser.uid?' (você)':''}</option>`).join('');
+}
+
+async function joinHousehold() {
+  const code = document.getElementById('join-code').value.trim().toUpperCase();
+  if (!code) return;
+
+  try {
+    const snap = await db.collection('households').where('inviteCode','==',code).limit(1).get();
+    if (snap.empty) {
+      showToast('Código não encontrado');
+      return;
+    }
+    const newHouseholdDoc = snap.docs[0];
+    const newHouseholdId = newHouseholdDoc.id;
+
+    if (newHouseholdId === householdId) {
+      showToast('Você já está neste lar');
+      return;
+    }
+
+    await db.collection('households').doc(newHouseholdId).update({
+      memberIds: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+    });
+    await db.collection('users').doc(currentUser.uid).update({
+      householdId: newHouseholdId
+    });
+
+    householdId = newHouseholdId;
+    document.getElementById('join-code').value = '';
+    showToast('Conectado ao novo lar!');
+    await loadHouseholdMembers();
+    await loadEverything();
+  } catch (err) {
+    console.error('Erro ao entrar no lar:', err);
+    showToast('Erro ao conectar: ' + err.message);
   }
 }
 
-function showPanel(id) {
+function copyInviteCode() {
+  const code = document.getElementById('invite-code').textContent;
+  navigator.clipboard.writeText(code).then(() => showToast('Código copiado!'));
+}
+
+function renderGreeting() {
+  const name = (currentUser.displayName || 'Usuário').split(' ')[0];
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
+  document.getElementById('greeting-name').textContent = `${greet}, ${name}!`;
+  document.getElementById('greeting-sub').textContent = householdMembers.length > 1
+    ? `Você e mais ${householdMembers.length - 1} pessoa(s) no lar`
+    : 'Convide seu parceiro(a) na aba Família';
+}
+
+async function loadEverything() {
+  await Promise.all([loadExpenses(), loadTasks()]);
+}
+
+async function loadExpenses() {
+  const snap = await db.collection('households').doc(householdId).collection('expenses').orderBy('createdAt','desc').limit(20).get();
+  const homeList = document.getElementById('home-expenses');
+  const finList = document.getElementById('finance-list');
+  let total = 0;
+
+  if (snap.empty) {
+    homeList.innerHTML = '<div class="empty-state">Nenhum gasto ainda</div>';
+    finList.innerHTML = '<div class="empty-state">Nenhum lançamento</div>';
+  } else {
+    let html = '';
+    snap.forEach(doc => {
+      const e = doc.data();
+      total += e.value;
+      const member = householdMembers.find(m => m.uid === e.userId);
+      const name = e.userId === currentUser.uid ? 'Você' : (member ? member.name.split(' ')[0] : 'Alguém');
+      html += `
+        <div class="exp-row">
+          <div class="exp-ic">💳</div>
+          <div class="exp-info">
+            <div class="exp-name">${e.description}</div>
+            <div class="exp-meta">${e.category} · ${e.payment}</div>
+          </div>
+          <div class="exp-right">
+            <div class="exp-val">R$ ${e.value.toFixed(2)}</div>
+            <span class="who-pill" style="background:${colorForUid(e.userId)}22;color:${colorForUid(e.userId)}">${name}</span>
+          </div>
+        </div>`;
+    });
+    homeList.innerHTML = html;
+    finList.innerHTML = html;
+  }
+  document.getElementById('total-month').textContent = total.toFixed(2);
+}
+
+async function loadTasks() {
+  const snap = await db.collection('households').doc(householdId).collection('tasks').orderBy('createdAt','desc').limit(30).get();
+  const homeList = document.getElementById('home-tasks');
+  const fullList = document.getElementById('tasks-list');
+
+  if (snap.empty) {
+    homeList.innerHTML = '<div class="empty-state">Sem tarefas</div>';
+    fullList.innerHTML = '<div class="empty-state">Sem tarefas</div>';
+    return;
+  }
+
+  let html = '';
+  snap.forEach(doc => {
+    const t = doc.data();
+    const member = householdMembers.find(m => m.uid === t.assignedTo);
+    const name = t.assignedTo === currentUser.uid ? 'Você' : (member ? member.name.split(' ')[0] : 'Alguém');
+    html += `
+      <div class="task-row">
+        <div class="t-chk ${t.done?'done':''}" onclick="toggleTask('${doc.id}', ${!t.done})">${t.done?'✓':''}</div>
+        <div>
+          <div class="t-name ${t.done?'done':''}">${t.description}</div>
+          <div class="t-meta">${name} · ${t.done?'concluída':'pendente'}</div>
+        </div>
+      </div>`;
+  });
+  homeList.innerHTML = html;
+  fullList.innerHTML = html;
+}
+
+async function toggleTask(taskId, done) {
+  await db.collection('households').doc(householdId).collection('tasks').doc(taskId).update({ done });
+  loadTasks();
+}
+
+function nav(id) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('p-' + id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('nav-' + id).classList.add('active');
   document.getElementById('screen').scrollTop = 0;
-}
 
-function nav(id) {
-  showPanel(id);
+  document.getElementById('fab').style.display = (id === 'familia') ? 'none' : 'flex';
+  currentModalType = id === 'tarefas' ? 'tarefa' : 'gasto';
 }
 
 function openModal() {
-  document.getElementById('modal').classList.add('open');
+  document.getElementById(currentModalType === 'tarefa' ? 'modal-tarefa' : 'modal-gasto').classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
 }
 
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
+async function saveExpense() {
+  const desc = document.getElementById('f-desc').value.trim();
+  const val = parseFloat(document.getElementById('f-val').value);
+  if (!desc || !val) { showToast('Preencha descrição e valor'); return; }
+
+  await db.collection('households').doc(householdId).collection('expenses').add({
+    description: desc,
+    value: val,
+    category: document.getElementById('f-cat').value,
+    payment: document.getElementById('f-pay').value,
+    userId: currentUser.uid,
+    createdAt: new Date()
+  });
+
+  closeModal('modal-gasto');
+  document.getElementById('f-desc').value = '';
+  document.getElementById('f-val').value = '';
+  showToast('🎉 Gasto salvo!');
+  loadExpenses();
+}
+
+async function saveTask() {
+  const desc = document.getElementById('t-desc').value.trim();
+  const who = document.getElementById('t-who').value;
+  if (!desc) { showToast('Descreva a tarefa'); return; }
+
+  await db.collection('households').doc(householdId).collection('tasks').add({
+    description: desc,
+    assignedTo: who,
+    done: false,
+    createdAt: new Date()
+  });
+
+  closeModal('modal-tarefa');
+  document.getElementById('t-desc').value = '';
+  showToast('📝 Tarefa criada!');
+  loadTasks();
 }
 
 function showToast(msg) {
@@ -469,22 +665,6 @@ function showToast(msg) {
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
-
-function showLoginScreen() {
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('loading-screen').style.display = 'none';
-  document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
-  document.getElementById('fab').style.display = 'none';
-  document.querySelector('.bottom-nav').style.display = 'none';
-}
-
-function logout() {
-  if (confirm('Desconectar?')) {
-    auth.signOut();
-  }
-}
-
-// Login screen padding fix on real mobile viewport
 </script>
 </body>
 </html>
