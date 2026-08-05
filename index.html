@@ -774,6 +774,21 @@ function showScreen(id) {
 
 showScreen('loading');
 
+// Captura o resultado do redirect (quando volta do login Google no Safari/iPhone)
+auth.getRedirectResult().then(result => {
+  if (result && result.user) {
+    currentUser = result.user;
+  }
+}).catch(error => {
+  console.error('Erro no redirect:', error.code, error.message);
+  const box = document.getElementById('login-error');
+  if (box) {
+    box.textContent = 'Erro ao fazer login: ' + error.message;
+    box.style.display = 'block';
+  }
+  showScreen('login');
+});
+
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     currentUser = user;
@@ -802,16 +817,30 @@ async function loginWithGoogle() {
   const errorBox = document.getElementById('login-error');
   errorBox.style.display = 'none';
   try {
-    await auth.signInWithPopup(provider);
+    // Tenta popup primeiro (Chrome desktop)
+    // Safari/iPhone bloqueia popup, cai no catch e usa redirect
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isSafari || isIOS) {
+      await auth.signInWithRedirect(provider);
+    } else {
+      await auth.signInWithPopup(provider);
+    }
   } catch (error) {
     console.error('Erro de login:', error.code, error.message);
+    if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+      // fallback para redirect se popup falhar
+      try {
+        await auth.signInWithRedirect(provider);
+      } catch (err2) {
+        errorBox.textContent = 'Erro ao fazer login: ' + err2.message;
+        errorBox.style.display = 'block';
+      }
+      return;
+    }
     let msg = 'Erro ao fazer login (' + error.code + ')';
     if (error.code === 'auth/unauthorized-domain') {
       msg = 'Este domínio não está autorizado no Firebase. Vá em Authentication → Settings → Authorized domains.';
-    } else if (error.code === 'auth/popup-blocked') {
-      msg = 'O navegador bloqueou o pop-up de login. Permita pop-ups e tente novamente.';
-    } else if (error.code === 'auth/popup-closed-by-user') {
-      msg = 'Login cancelado.';
     }
     errorBox.textContent = msg;
     errorBox.style.display = 'block';
