@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cronograma — App Lar</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#3B82F6;--blue-d:#1D4ED8;--blue-l:#DBEAFE;
+  --green:#10B981;--green-l:#D1FAE5;--green-d:#065F46;
+  --yellow:#F59E0B;--yellow-l:#FEF3C7;
+  --pink:#F472B6;--pink-d:#BE185D;--pink-l:#FCE7F3;
+  --red:#EF4444;--red-l:#FEE2E2;--red-d:#991B1B;
+  --purple:#A855F7;--purple-l:#F3E8FF;
+  --orange:#FB923C;--orange-l:#FFEDD5;
+  --ink:#0F172A;--ink-mid:#475569;--ink-light:#94A3B8;
+  --border:#E2E8F0;--bg:#F0F7FF;--white:#fff;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding:0 0 60px;}
+
+/* ── HEADER ── */
+.top-bar{background:var(--blue);padding:18px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 0 var(--blue-d);}
+.top-title{font-size:20px;font-weight:900;color:white;}
+.top-sub{font-size:12px;color:rgba(255,255,255,0.75);font-weight:600;margin-top:2px;}
+.online-count{background:rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:800;color:white;}
+
+/* ── WHO AM I ── */
+.who-bar{background:white;border-bottom:2px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:10px;}
+.who-label{font-size:13px;font-weight:700;color:var(--ink-mid);}
+.who-input{border:2px solid var(--border);border-radius:10px;padding:8px 12px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--ink);outline:none;flex:1;max-width:200px;}
+.who-input:focus{border-color:var(--blue);}
+.who-btn{background:var(--blue);color:white;border:none;border-radius:10px;padding:8px 16px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 var(--blue-d);}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px;}
+.stat{background:white;border-radius:14px;border:2px solid var(--border);padding:14px;text-align:center;}
+.stat-val{font-size:22px;font-weight:900;color:var(--blue);}
+.stat-lbl{font-size:10px;font-weight:800;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.04em;margin-top:2px;}
+
+/* ── PROGRESS ── */
+.prog-wrap{margin:0 16px 16px;background:white;border-radius:14px;border:2px solid var(--border);padding:14px 16px;}
+.prog-label{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--ink-mid);margin-bottom:8px;}
+.prog-track{background:var(--blue-l);border-radius:20px;height:12px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--blue),var(--pink));transition:width 0.5s ease;}
+
+/* ── PHASES ── */
+.phase{margin:0 16px 14px;background:white;border-radius:18px;border:2px solid var(--border);overflow:hidden;}
+.phase-hdr{padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.phase-hdr:hover{background:#FAFAFA;}
+.ph-num{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:white;flex-shrink:0;}
+.ph-info{flex:1;}
+.ph-title{font-size:14px;font-weight:800;color:var(--ink);}
+.ph-period{font-size:11px;font-weight:600;color:var(--ink-light);margin-top:1px;}
+.ph-tag{font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;flex-shrink:0;}
+.ph-arrow{color:var(--ink-light);font-size:18px;transition:transform 0.2s;flex-shrink:0;}
+.ph-arrow.open{transform:rotate(90deg);}
+.phase-body{display:none;border-top:2px solid var(--border);}
+.phase-body.open{display:block;}
+
+/* ── WEEKS ── */
+.week{padding:12px 16px;border-bottom:2px dashed #F1F5F9;}
+.week:last-child{border-bottom:none;}
+.week-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.week-lbl{font-size:11px;font-weight:900;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.05em;}
+.week-date{font-size:11px;font-weight:600;color:#CBD5E1;}
+
+/* ── TASKS ── */
+.task{background:#F8FAFC;border:2px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px;}
+.task:last-child{margin-bottom:0;}
+.task-row{display:flex;align-items:flex-start;gap:10px;}
+.t-chk{width:24px;height:24px;border-radius:7px;border:3px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all 0.15s;background:white;margin-top:1px;}
+.t-chk.done{background:var(--green);border-color:var(--green);color:white;}
+.t-main{flex:1;}
+.t-name{font-size:14px;font-weight:700;color:var(--ink);}
+.t-name.done{text-decoration:line-through;color:var(--ink-light);}
+.t-detail{font-size:12px;font-weight:600;color:var(--ink-light);margin-top:2px;line-height:1.4;}
+.t-tag{font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;margin-top:4px;display:inline-block;}
+.t-meta{font-size:11px;font-weight:700;color:var(--ink-light);margin-top:6px;display:flex;align-items:center;gap:6px;}
+.t-who-badge{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:800;}
+
+/* ── COMMENTS / BUGS ── */
+.task-footer{border-top:2px dashed #F1F5F9;margin-top:10px;padding-top:10px;}
+.comments-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;}
+.comment{background:white;border-radius:8px;padding:8px 10px;font-size:12px;font-weight:600;color:var(--ink);border:2px solid var(--border);}
+.comment-author{font-size:10px;font-weight:800;color:var(--blue);margin-bottom:2px;}
+.comment-del{float:right;background:none;border:none;color:var(--ink-light);cursor:pointer;font-size:14px;line-height:1;}
+.add-comment{display:flex;gap:6px;}
+.comment-input{flex:1;border:2px solid var(--border);border-radius:8px;padding:7px 10px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;color:var(--ink);outline:none;resize:none;}
+.comment-input:focus{border-color:var(--blue);}
+.comment-btn{background:var(--blue);color:white;border:none;border-radius:8px;padding:7px 12px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;}
+
+/* ── ADD TASK ── */
+.add-task-wrap{padding:10px 16px;border-top:2px dashed var(--border);}
+.add-task-btn{width:100%;background:var(--blue-l);color:var(--blue-d);border:2px dashed var(--blue);border-radius:10px;padding:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+.add-task-form{background:var(--blue-l);border-radius:10px;padding:12px;border:2px solid var(--blue);}
+.add-task-form input,.add-task-form textarea{width:100%;border:2px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;color:var(--ink);outline:none;margin-bottom:8px;background:white;}
+.add-task-form textarea{resize:vertical;height:60px;}
+.add-form-row{display:flex;gap:8px;}
+.add-form-row select{flex:1;border:2px solid var(--border);border-radius:8px;padding:9px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--ink);outline:none;background:white;}
+.btn-save-task{background:var(--blue);color:white;border:none;border-radius:8px;padding:10px 18px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+.btn-cancel-task{background:white;color:var(--ink-mid);border:2px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-60px);background:var(--ink);color:white;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:800;z-index:200;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <div class="top-title">🗓️ Cronograma — App Lar</div>
+    <div class="top-sub">Plano 2026–2027 · compartilhado em tempo real</div>
+  </div>
+  <div class="online-count" id="online-lbl">carregando...</div>
+</div>
+
+<!-- Quem sou eu -->
+<div class="who-bar" id="who-bar">
+  <span class="who-label">Seu nome:</span>
+  <input class="who-input" id="who-input" type="text" placeholder="Ex: João, Amanda..." maxlength="20">
+  <button class="who-btn" onclick="saveName()">Salvar</button>
+</div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat"><div class="stat-val" id="s-pct">0%</div><div class="stat-lbl">Concluído</div></div>
+  <div class="stat"><div class="stat-val" id="s-done">0/0</div><div class="stat-lbl">Tarefas</div></div>
+  <div class="stat"><div class="stat-val" id="s-bugs">0</div><div class="stat-lbl">Comentários</div></div>
+</div>
+
+<!-- Progresso -->
+<div class="prog-wrap">
+  <div class="prog-label"><span>Progresso geral</span><span id="prog-txt">0 de 0 tarefas</span></div>
+  <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+</div>
+
+<!-- FASES -->
+<div id="phases-container"></div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyAdV1UmSC0Be-xgeCACTYXcEaLw-5FvWlE",
+  authDomain: "lar-app-2cb72.firebaseapp.com",
+  projectId: "lar-app-2cb72",
+  storageBucket: "lar-app-2cb72.firebasestorage.app",
+  messagingSenderId: "561839460040",
+  appId: "1:561839460040:web:8e9f564762fd74e4ec9ffd"
+});
+const db = firebase.firestore();
+const COLL = 'cronograma_v1';
+
+let userName = localStorage.getItem('crono_name') || '';
+let allData = {};
+
+// ── FASES INICIAIS ──
+const PHASES = [
+  {
+    id:'fase1', num:'1', title:'Terminar e testar com vocês 4',
+    period:'4 ago → 31 ago 2026', color:'#3B82F6', shadow:'#1D4ED8',
+    tagText:'Em andamento', tagBg:'#DBEAFE', tagColor:'#1D4ED8', open:true,
+    weeks:[
+      { label:'Semana 1', dates:'4–10 ago', tasks:[
+        {id:'f1w1t1', name:'Corrigir bugs abertos do app', detail:'Testar cada tela no iPhone e Android — anotar o que quebra', tag:'Dev', tagBg:'#DBEAFE', tagColor:'#1D4ED8'},
+        {id:'f1w1t2', name:'Convidar o casal amigo e testar o código de convite', detail:'Verificar se os dados aparecem certos para cada casal separadamente', tag:'Teste', tagBg:'#D1FAE5', tagColor:'#065F46'},
+        {id:'f1w1t3', name:'Criar documento de feedback compartilhado', detail:'Google Docs — os 4 anotam bugs e sugestões ao longo do mês', tag:'Gestão', tagBg:'#FEF3C7', tagColor:'#92400E'},
+      ]},
+      { label:'Semana 2', dates:'11–17 ago', tasks:[
+        {id:'f1w2t1', name:'Travar regras de segurança do Firestore', detail:'URGENTE: hoje qualquer pessoa com o link pode ler os dados de todos os casais', tag:'🔴 Urgente', tagBg:'#FEE2E2', tagColor:'#991B1B'},
+        {id:'f1w2t2', name:'Implementar notificações push reais', detail:'Firebase Cloud Messaging — alertar tarefas atrasadas e validações pendentes', tag:'Dev', tagBg:'#DBEAFE', tagColor:'#1D4ED8'},
+      ]},
+      { label:'Semana 3', dates:'18–24 ago', tasks:[
+        {id:'f1w3t1', name:'Perfil do casal editável', detail:'Nome do lar, foto dos membros, personalização básica', tag:'Dev', tagBg:'#DBEAFE', tagColor:'#1D4ED8'},
+        {id:'f1w3t2', name:'Aplicar feedbacks da semana 1 e 2', detail:'Ir no documento e resolver os itens mais votados pelos 4 usuários', tag:'Teste', tagBg:'#D1FAE5', tagColor:'#065F46'},
+      ]},
+      { label:'Semana 4', dates:'25–31 ago', tasks:[
+        {id:'f1w4t1', name:'Retrospectiva com os 4 usuários', detail:'Reunião (pode ser WhatsApp) — o que falta, o que está ótimo, o que confundiu', tag:'Gestão', tagBg:'#FEF3C7', tagColor:'#92400E'},
+        {id:'f1w4t2', name:'Definir lista final de ajustes antes de abrir ao público', detail:'Priorizar pelo impacto — não tentar fazer tudo, só o essencial', tag:'Gestão', tagBg:'#FEF3C7', tagColor:'#92400E'},
+      ]},
+    ]
+  },
+  {
+    id:'fase2', num:'2', title:'Preparar para versão pública gratuita',
+    period:'1 set → 12 out 2026', color:'#10B981', shadow:'#059669',
+    tagText:'Aguardando fase 1', tagBg:'#D1FAE5', tagColor:'#065F46', open:false,
+    weeks:[
+      { label:'Semanas 5–6', dates:'1–14 set', tasks:[
+        {id:'f2w1t1', name:'Definir nome definitivo do app', detail:'Checar se o domínio está disponível antes de escolher', tag:'Marca', tagBg:'#F3E8FF', tagColor:'#7E22CE'},
+        {id:'f2w1t2', name:'Comprar domínio próprio', detail:'Registro.br para .com.br (R$ 40/ano) ou Namecheap para .app', tag:'R$ 40–80', tagBg:'#FEF3C7', tagColor:'#92400E'},
+        {id:'f2w1t3', name:'Migrar app para o domínio próprio', detail:'Apontar DNS para o GitHub Pages ou mover para Firebase Hosting (gratuito)', tag:'Dev', tagBg:'#DBEAFE', tagColor:'#1D4ED8'},
+        {id:'f2w1t4', name:'Criar logo definitiva', detail:'Canva — variações para ícone de app, fundo branco e fundo colorido', tag:'Marca', tagBg:'#F3E8FF', tagColor:'#7E22CE'},
+      ]},
+      { label:'Semanas 7–8', dates:'15–28 set', tasks:[
+        {id:'f2w2t1', name:'Criar landing page do app', detail:'"O app de gestão do casal" — screenshots, benefícios, botão de instalar', tag:'Dev', tagBg:'#DBEAFE', tagColor:'#1D4ED8'},
+        {id:'f2w2t2', name:'Publicar política de privacidade', detail:'Obrigatório antes de anunciar e para entrar nas lojas. Termly ou iubenda (grátis)', tag:'Legal', tagBg:'#FEE2E2', tagColor:'#991B1B'},
+        {id:'f2w2t3', name:'Criar perfis nas redes sociais do app', detail:'Instagram e TikTok com o nome definitivo', tag:'Marca', tagBg:'#F3E8FF', tagColor:'#7E22CE'},
+      ]},
+      { label:'Semanas 9–10', dates:'29 set–12 out', tasks:[
+        {id:'f2w3t1', name:'Teste de estresse com 10–20 casais conhecidos', detail:'Antes de pagar anúncio — validar se o Firebase aguenta mais usuários', tag:'Teste', tagBg:'#D1FAE5', tagColor:'#065F46'},
+        {id:'f2w3t2', name:'Criar canal de feedback para novos usuários', detail:'Formulário Google Forms ou grupo no WhatsApp', tag:'Gestão', tagBg:'#FEF3C7', tagColor:'#92400E'},
+        {id:'f2w3t3', name:'Atualizar ícone PWA com logo definitiva', detail:'Já temos a estrutura — só trocar as imagens', tag:'Dev', tagBg:'#DBEAFE', tagColor:'#1D4ED8'},
+      ]},
+    ]
+  },
+  {
+    id:'fase3', num:'3', title:'Divulgação paga e crescimento',
+    period:'13 out 2026 → 8 fev 2027', color:'#F59E0B', shadow:'#B45309',
+    tagText:'Aguardando fase 2', tagBg:'#FEF3C7', tagColor:'#92400E', open:false,
+    weeks:[
+      { label:'Semanas 11–12', dates:'13–26 out', tasks:[
+        {id:'f3w1t1', name:'Criar 3 vídeos curtos mostrando o app', detail:'TikTok/Reels — "como meu casal organiza as finanças", "quem faz mais tarefas?"', tag:'Conteúdo', tagBg:'#F3E8FF', tagColor:'#7E22CE'},
+        {id:'f3w1t2', name:'Conseguir 3 depoimentos dos casais testadores', detail:'Vídeo ou print de conversa real — vira material de anúncio', tag:'Conteúdo', tagBg:'#F3E8FF', tagColor:'#7E22CE'},
+      ]},
+      { label:'Semanas 13–16', dates:'27 out–23 nov', tasks:[
+        {id:'f3w2t1', name:'Criar conta no Meta Business e primeiro anúncio', detail:'Segmentação: casais, 22–40 anos, Brasil. R$ 10/dia por 15 dias.', tag:'Anúncio', tagBg:'#FEE2E2', tagColor:'#991B1B'},
+        {id:'f3w2t2', name:'Analisar métricas da primeira campanha', detail:'Custo por instalação, tempo no app, casais ativos após 7 dias', tag:'Gestão', tagBg:'#FEF3C7', tagColor:'#92400E'},
+        {id:'f3w2t3', name:'Ajustar app baseado em feedback dos novos usuários', detail:'Foco nos primeiros 50 casais — o que os faz sair, o que elogiam', tag:'Dev', tagBg:'#DBEAFE', tagColor:'#1D4ED8'},
+      ]},
+      { label:'Semanas 17–26', dates:'24 nov 2026–8 fev 2027', tasks:[
+        {id:'f3w3t1', name:'Escalar anúncios para R$ 300–600/mês', detail:'Só escalar o que funcionou na fase de teste', tag:'Anúncio', tagBg:'#FEE2E2', tagColor:'#991B1B'},
+        {id:'f3w3t2', name:'Meta: 300 casais ativos', detail:'Esse número valida o produto e é suficiente para entrar nas lojas', tag:'Meta', tagBg:'#D1FAE5', tagColor:'#065F46'},
+        {id:'f3w3t3', name:'Publicar conteúdo semanal nas redes sociais', detail:'1 post/semana — dicas de organização de casal + mostrar o app', tag:'Conteúdo', tagBg:'#F3E8FF', tagColor:'#7E22CE'},
+      ]},
+    ]
+  },
+  {
+    id:'fase4', num:'4', title:'App Store + Google Play',
+    period:'fev → abr 2027', color:'#A855F7', shadow:'#7E22CE',
+    tagText:'Aguardando 300 casais', tagBg:'#F3E8FF', tagColor:'#7E22CE', open:false,
+    weeks:[
+      { label:'Semanas 27–30', dates:'fev 2027', tasks:[
+        {id:'f4w1t1', name:'Empacotar app com Capacitor', detail:'Converte o app web em app nativo iOS/Android sem reescrever código', tag:'Dev', tagBg:'#DBEAFE', tagColor:'#1D4ED8'},
+        {id:'f4w1t2', name:'Criar conta Apple Developer e Google Play Console', detail:'Apple: US$ 99/ano · Google: US$ 25 único. Apple precisa de Mac.', tag:'R$ 675', tagBg:'#FEF3C7', tagColor:'#92400E'},
+        {id:'f4w1t3', name:'Preparar screenshots e descrição para as lojas', detail:'ASO — palavras-chave: "casal", "organização", "finanças casal"', tag:'Marca', tagBg:'#F3E8FF', tagColor:'#7E22CE'},
+      ]},
+      { label:'Semanas 31–34', dates:'mar–abr 2027', tasks:[
+        {id:'f4w2t1', name:'Enviar para revisão da Apple e Google', detail:'Google: 1–3 dias. Apple: até 7 dias, pode pedir ajustes.', tag:'Lançamento', tagBg:'#D1FAE5', tagColor:'#065F46'},
+        {id:'f4w2t2', name:'Lançamento oficial nas lojas', detail:'Anunciar para base existente + nova campanha direcionada às lojas', tag:'Lançamento', tagBg:'#D1FAE5', tagColor:'#065F46'},
+      ]},
+    ]
+  },
+  {
+    id:'fase5', num:'5', title:'Monetização',
+    period:'a partir de abr 2027', color:'#EF4444', shadow:'#B91C1C',
+    tagText:'Quando tiver 1.000 casais', tagBg:'#FEE2E2', tagColor:'#991B1B', open:false,
+    weeks:[
+      { label:'Decisões de modelo', dates:'', tasks:[
+        {id:'f5w1t1', name:'Definir modelo freemium', detail:'Grátis até 20 tarefas + 30 dias de histórico. Pago desbloqueia tudo.', tag:'Negócio', tagBg:'#FEE2E2', tagColor:'#991B1B'},
+        {id:'f5w1t2', name:'Implementar plano pago — R$ 14,90/mês por casal', detail:'Stripe ou RevenueCat para gerenciar assinaturas dentro das lojas', tag:'Dev', tagBg:'#DBEAFE', tagColor:'#1D4ED8'},
+        {id:'f5w1t3', name:'Meta: R$ 1.000/mês (67 casais pagantes)', detail:'Com 1.000 casais ativos e 7% de conversão — número conservador', tag:'Meta', tagBg:'#D1FAE5', tagColor:'#065F46'},
+      ]},
+    ]
+  },
+];
+
+// ── RENDER ──
+function render() {
+  const container = document.getElementById('phases-container');
+  container.innerHTML = '';
+  PHASES.forEach(ph => {
+    const phEl = document.createElement('div');
+    phEl.className = 'phase';
+    phEl.id = 'ph-' + ph.id;
+    let weeksHtml = ph.weeks.map(w => {
+      let tasksHtml = w.tasks.map(t => renderTask(t, ph.id)).join('');
+      return `<div class="week">
+        <div class="week-hdr">
+          <span class="week-lbl">${w.label}</span>
+          <span class="week-date">${w.dates}</span>
+        </div>
+        ${tasksHtml}
+      </div>`;
+    }).join('');
+
+    // extra tasks from Firebase
+    const extraTasks = Object.values(allData)
+      .filter(d => d.type === 'task' && d.phaseId === ph.id)
+      .map(d => renderDynamicTask(d)).join('');
+
+    phEl.innerHTML = `
+      <div class="phase-hdr" onclick="togglePhase('${ph.id}')">
+        <div class="ph-num" style="background:${ph.color};box-shadow:0 3px 0 ${ph.shadow}">${ph.num}</div>
+        <div class="ph-info">
+          <div class="ph-title">${ph.title}</div>
+          <div class="ph-period">${ph.period}</div>
+        </div>
+        <span class="ph-tag" style="background:${ph.tagBg};color:${ph.tagColor}">${ph.tagText}</span>
+        <span class="ph-arrow ${ph.open?'open':''}" id="arrow-${ph.id}">›</span>
+      </div>
+      <div class="phase-body ${ph.open?'open':''}" id="body-${ph.id}">
+        ${weeksHtml}
+        ${extraTasks ? `<div class="week"><div class="week-hdr"><span class="week-lbl">Adicionadas pelo time</span></div>${extraTasks}</div>` : ''}
+        <div class="add-task-wrap">
+          <button class="add-task-btn" onclick="showAddTask('${ph.id}')">+ Adicionar tarefa ou bug</button>
+          <div class="add-task-form" id="add-form-${ph.id}" style="display:none;margin-top:8px;">
+            <input type="text" id="new-task-name-${ph.id}" placeholder="Nome da tarefa ou bug...">
+            <textarea id="new-task-detail-${ph.id}" placeholder="Detalhe, contexto, como reproduzir..."></textarea>
+            <div class="add-form-row">
+              <select id="new-task-tag-${ph.id}">
+                <option value="Bug">🐛 Bug</option>
+                <option value="Dev">💻 Dev</option>
+                <option value="Teste">✅ Teste</option>
+                <option value="Gestão">📋 Gestão</option>
+                <option value="Ideia">💡 Ideia</option>
+              </select>
+              <button class="btn-save-task" onclick="addTask('${ph.id}')">Salvar</button>
+              <button class="btn-cancel-task" onclick="hideAddTask('${ph.id}')">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    container.appendChild(phEl);
+    restoreTaskStates(ph);
+  });
+  updateStats();
+}
+
+function renderTask(t, phaseId) {
+  const d = allData[t.id] || {};
+  const done = d.done || false;
+  const doneBy = d.doneBy || '';
+  const comments = d.comments || {};
+  const commentCount = Object.keys(comments).length;
+  let commentsHtml = Object.entries(comments).map(([cid, c]) => `
+    <div class="comment">
+      <div class="comment-author">${c.author} · ${c.when}</div>
+      ${c.text}
+      ${c.author === userName ? `<button class="comment-del" onclick="delComment('${t.id}','${cid}')">×</button>` : ''}
+    </div>`).join('');
+  return `
+    <div class="task" id="task-${t.id}">
+      <div class="task-row">
+        <div class="t-chk ${done?'done':''}" onclick="toggleTask('${t.id}')">${done?'✓':''}</div>
+        <div class="t-main">
+          <div class="t-name ${done?'done':''}">${t.name}</div>
+          <div class="t-detail">${t.detail}</div>
+          <span class="t-tag" style="background:${t.tagBg};color:${t.tagColor}">${t.tag}</span>
+          ${doneBy ? `<div class="t-meta">Concluído por <span class="t-who-badge" style="background:#D1FAE5;color:#065F46">${doneBy}</span></div>` : ''}
+        </div>
+      </div>
+      <div class="task-footer">
+        <div class="comments-list" id="comments-${t.id}">${commentsHtml}</div>
+        <div class="add-comment">
+          <textarea class="comment-input" id="ci-${t.id}" placeholder="Comentário, bug encontrado..." rows="2"></textarea>
+          <button class="comment-btn" onclick="addComment('${t.id}')">Enviar</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderDynamicTask(d) {
+  const done = d.done || false;
+  const doneBy = d.doneBy || '';
+  const comments = d.comments || {};
+  let commentsHtml = Object.entries(comments).map(([cid, c]) => `
+    <div class="comment">
+      <div class="comment-author">${c.author} · ${c.when}</div>
+      ${c.text}
+      ${c.author === userName ? `<button class="comment-del" onclick="delComment('${d.id}','${cid}')">×</button>` : ''}
+    </div>`).join('');
+  const tagColors = {Bug:['#FEE2E2','#991B1B'],Dev:['#DBEAFE','#1D4ED8'],Teste:['#D1FAE5','#065F46'],Gestão:['#FEF3C7','#92400E'],Ideia:['#F3E8FF','#7E22CE']};
+  const [bg,fg] = tagColors[d.tag] || ['#F1F5F9','#475569'];
+  return `
+    <div class="task" id="task-${d.id}">
+      <div class="task-row">
+        <div class="t-chk ${done?'done':''}" onclick="toggleTask('${d.id}')">${done?'✓':''}</div>
+        <div class="t-main">
+          <div class="t-name ${done?'done':''}">${d.name}</div>
+          ${d.detail ? `<div class="t-detail">${d.detail}</div>` : ''}
+          <span class="t-tag" style="background:${bg};color:${fg}">${d.tag}</span>
+          ${doneBy ? `<div class="t-meta">Concluído por <span class="t-who-badge" style="background:#D1FAE5;color:#065F46">${doneBy}</span></div>` : ''}
+        </div>
+      </div>
+      <div class="task-footer">
+        <div class="comments-list" id="comments-${d.id}">${commentsHtml}</div>
+        <div class="add-comment">
+          <textarea class="comment-input" id="ci-${d.id}" placeholder="Comentário, bug encontrado..." rows="2"></textarea>
+          <button class="comment-btn" onclick="addComment('${d.id}')">Enviar</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function restoreTaskStates(ph) {
+  ph.weeks.forEach(w => w.tasks.forEach(t => {
+    const d = allData[t.id] || {};
+    const chk = document.querySelector(`#task-${t.id} .t-chk`);
+    const name = document.querySelector(`#task-${t.id} .t-name`);
+    if (!chk) return;
+    if (d.done) { chk.classList.add('done'); chk.textContent = '✓'; }
+    else { chk.classList.remove('done'); chk.textContent = ''; }
+    if (name) { d.done ? name.classList.add('done') : name.classList.remove('done'); }
+  }));
+}
+
+// ── TOGGLE TASK ──
+async function toggleTask(taskId) {
+  if (!userName) { alert('Digite seu nome primeiro!'); return; }
+  const ref = db.collection(COLL).doc(taskId);
+  const snap = await ref.get();
+  const cur = snap.exists ? snap.data() : {};
+  const newDone = !cur.done;
+  await ref.set({ ...cur, done: newDone, doneBy: newDone ? userName : '', updatedAt: new Date() }, { merge: true });
+  showToast(newDone ? `✅ Marcado por ${userName}!` : 'Desmarcado');
+}
+
+// ── COMMENTS ──
+async function addComment(taskId) {
+  if (!userName) { alert('Digite seu nome primeiro!'); return; }
+  const input = document.getElementById('ci-' + taskId);
+  const text = input.value.trim();
+  if (!text) return;
+  const ref = db.collection(COLL).doc(taskId);
+  const snap = await ref.get();
+  const cur = snap.exists ? snap.data() : {};
+  const comments = cur.comments || {};
+  const cid = 'c' + Date.now();
+  const now = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  comments[cid] = { text, author: userName, when: now };
+  await ref.set({ ...cur, comments }, { merge: true });
+  input.value = '';
+  showToast('💬 Comentário salvo!');
+}
+
+async function delComment(taskId, cid) {
+  const ref = db.collection(COLL).doc(taskId);
+  const snap = await ref.get();
+  if (!snap.exists) return;
+  const cur = snap.data();
+  const comments = cur.comments || {};
+  delete comments[cid];
+  await ref.set({ ...cur, comments }, { merge: true });
+}
+
+// ── ADD TASK ──
+function showAddTask(phId) {
+  document.getElementById('add-form-' + phId).style.display = 'block';
+}
+function hideAddTask(phId) {
+  document.getElementById('add-form-' + phId).style.display = 'none';
+}
+async function addTask(phId) {
+  if (!userName) { alert('Digite seu nome primeiro!'); return; }
+  const name = document.getElementById('new-task-name-' + phId).value.trim();
+  const detail = document.getElementById('new-task-detail-' + phId).value.trim();
+  const tag = document.getElementById('new-task-tag-' + phId).value;
+  if (!name) return;
+  const id = 'dyn_' + Date.now();
+  await db.collection(COLL).doc(id).set({
+    id, type:'task', phaseId: phId, name, detail, tag,
+    done: false, doneBy: '', comments: {},
+    createdBy: userName, createdAt: new Date()
+  });
+  hideAddTask(phId);
+  showToast('✅ Tarefa adicionada!');
+}
+
+// ── STATS ──
+function updateStats() {
+  let total = 0, done = 0, bugCount = 0;
+  document.querySelectorAll('.t-chk').forEach(el => {
+    total++;
+    if (el.classList.contains('done')) done++;
+  });
+  document.querySelectorAll('.comment').forEach(() => bugCount++);
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('s-pct').textContent = pct + '%';
+  document.getElementById('s-done').textContent = done + '/' + total;
+  document.getElementById('s-bugs').textContent = bugCount;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-txt').textContent = done + ' de ' + total + ' tarefas';
+}
+
+// ── TOGGLE PHASE ──
+function togglePhase(id) {
+  const body = document.getElementById('body-' + id);
+  const arrow = document.getElementById('arrow-' + id);
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+// ── NAME ──
+function saveName() {
+  const val = document.getElementById('who-input').value.trim();
+  if (!val) return;
+  userName = val;
+  localStorage.setItem('crono_name', val);
+  document.getElementById('who-bar').style.display = 'none';
+  showToast('👋 Bem-vindo, ' + val + '!');
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── FIREBASE LISTENER ──
+db.collection(COLL).onSnapshot(snap => {
+  snap.forEach(doc => { allData[doc.id] = { id: doc.id, ...doc.data() }; });
+  snap.docChanges().forEach(change => {
+    if (change.type === 'removed') delete allData[change.doc.id];
+  });
+  render();
+});
+
+// ── ONLINE COUNT (simples via Firestore presence) ──
+const presenceId = 'presence_' + Math.random().toString(36).substr(2,6);
+db.collection(COLL + '_presence').doc(presenceId).set({ name: userName || 'anônimo', at: new Date() });
+setInterval(async () => {
+  const snap = await db.collection(COLL + '_presence').get();
+  const recent = snap.docs.filter(d => {
+    const at = d.data().at && d.data().at.toDate ? d.data().at.toDate() : null;
+    return at && (Date.now() - at.getTime()) < 60000;
+  });
+  document.getElementById('online-lbl').textContent = recent.length + ' online agora';
+  db.collection(COLL + '_presence').doc(presenceId).set({ name: userName || 'anônimo', at: new Date() });
+}, 30000);
+
+// Init
+if (userName) {
+  document.getElementById('who-bar').style.display = 'none';
+} else {
+  document.getElementById('who-input').focus();
+}
+</script>
+</body>
+</html>
