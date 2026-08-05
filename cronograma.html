@@ -146,6 +146,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 .comment-author{font-weight:600;color:var(--text-2);}
 .comment-text{font-size:13px;color:var(--text);line-height:1.4;}
 .comment-del{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;margin-left:auto;}
+.comment-action-btn{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:12px;padding:0 2px;transition:color 0.12s;}
+.comment-action-btn:hover{color:var(--indigo);}
 .comment-input-row{display:flex;gap:8px;margin-top:8px;}
 .comment-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);outline:none;resize:none;transition:border-color 0.15s;}
 .comment-input:focus{border-color:var(--indigo);}
@@ -490,17 +492,34 @@ function render() {
       bodyHTML += `</div>`;
     });
 
-    // dynamic tasks
+    // dynamic tasks — grouped by weekLabel
     const dynTasks = Object.values(fbData).filter(d => d.type === 'dyn' && d.phaseId === ph.id);
     if (dynTasks.length) {
-      bodyHTML += `<div class="task-table">
-        <div class="week-sep">
-          <span class="week-sep-label">Adicionadas pelo time</span>
-          <span class="week-sep-line"></span>
-        </div>`;
-      dynTasks.forEach(d => { bodyHTML += renderDynTaskRow(d); });
-      bodyHTML += `</div>`;
+      const byWeek = {};
+      dynTasks.forEach(d => {
+        const wk = d.weekLabel || 'Adicionadas pelo time';
+        if (!byWeek[wk]) byWeek[wk] = [];
+        byWeek[wk].push(d);
+      });
+      Object.entries(byWeek).forEach(([wkLabel, tasks]) => {
+        // find week dates from PHASES
+        let wkDates = '';
+        ph.weeks.forEach(w => { if (w.label === wkLabel) wkDates = w.dates; });
+        bodyHTML += `<div class="task-table">
+          <div class="week-sep">
+            <span class="week-sep-label">${wkLabel} — Adicionadas</span>
+            <span class="week-sep-line"></span>
+            ${wkDates ? `<span class="week-sep-date">${wkDates}</span>` : ''}
+          </div>`;
+        tasks.forEach(d => { bodyHTML += renderDynTaskRow(d); });
+        bodyHTML += `</div>`;
+      });
     }
+
+    // build week options for add form
+    const weekOptions = ph.weeks.map(w =>
+      `<option value="${w.label}">${w.label} (${w.dates})</option>`
+    ).join('');
 
     bodyHTML += `
       <div class="task-table">
@@ -516,6 +535,12 @@ function render() {
               <option>Gestão</option><option>Marca</option><option>Ideia</option>
             </select>
             <input class="add-input" id="adate-${ph.id}" placeholder="Prazo (ex: 10 ago)">
+          </div>
+          <div style="margin-bottom:8px;">
+            <label style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px;">Alocar na semana</label>
+            <select class="add-form-select" id="aweek-${ph.id}" style="width:100%;">
+              ${weekOptions}
+            </select>
           </div>
           <textarea class="add-textarea" id="adetail-${ph.id}" placeholder="Detalhe, contexto, como reproduzir..."></textarea>
           <div class="add-form-actions">
@@ -605,23 +630,37 @@ function renderDynTaskRow(d) {
 function renderDetailPanel(taskId, detail, comments) {
   const d = fbData[taskId] || {};
   const doneBy = d.doneBy || '';
-  let commentsHTML = Object.entries(comments).map(([cid,c]) => `
-    <div class="comment-item">
+  const commentEntries = Object.entries(comments).sort((a,b) => a[0].localeCompare(b[0]));
+  let commentsHTML = commentEntries.map(([cid,c]) => {
+    const isMine = c.author === userName;
+    return `
+    <div class="comment-item" id="comment-wrap-${cid}">
       <div class="comment-av" style="background:${avatarColor(c.author)}">${c.author[0].toUpperCase()}</div>
       <div class="comment-body">
         <div class="comment-meta">
           <span class="comment-author">${c.author}</span>
           <span>${c.when}</span>
-          ${c.author===userName?`<button class="comment-del" onclick="delComment('${taskId}','${cid}')">×</button>`:''}
+          ${isMine ? `
+            <button class="comment-action-btn" onclick="startEditComment('${taskId}','${cid}')" title="Editar">✏️</button>
+            <button class="comment-del" onclick="delComment('${taskId}','${cid}')" title="Excluir">×</button>
+          ` : ''}
         </div>
-        <div class="comment-text">${c.text}</div>
+        <div class="comment-text" id="ctext-${cid}">${c.text}</div>
+        <div class="comment-edit-row" id="cedit-${cid}" style="display:none;margin-top:6px;">
+          <textarea class="comment-input" id="cedit-input-${cid}" rows="2" style="margin-bottom:6px;">${c.text}</textarea>
+          <div style="display:flex;gap:6px;">
+            <button class="comment-send" onclick="saveEditComment('${taskId}','${cid}')">Salvar</button>
+            <button class="btn-sm btn-sm-ghost" onclick="cancelEditComment('${cid}')">Cancelar</button>
+          </div>
+        </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   return `<div class="task-detail-panel">
     ${detail?`<div class="detail-full">${detail}</div>`:''}
     ${doneBy?`<div class="done-by-label">✓ Concluído por ${doneBy}</div>`:''}
     <div class="comments-section">
-      ${Object.keys(comments).length?`<div class="comments-title">Comentários e bugs</div>`:''}
+      ${commentEntries.length ? `<div class="comments-title">Comentários e anotações (${commentEntries.length})</div>` : ''}
       <div class="comments-list">${commentsHTML}</div>
       <div class="comment-input-row">
         <textarea class="comment-input" id="ci-${taskId}" placeholder="Comentário, bug encontrado, observação..." rows="2"></textarea>
@@ -696,17 +735,51 @@ async function delComment(taskId, cid) {
   }
 }
 
+function startEditComment(taskId, cid) {
+  document.getElementById('ctext-'+cid).style.display = 'none';
+  document.getElementById('cedit-'+cid).style.display = 'block';
+  const input = document.getElementById('cedit-input-'+cid);
+  if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+}
+
+function cancelEditComment(cid) {
+  document.getElementById('ctext-'+cid).style.display = 'block';
+  document.getElementById('cedit-'+cid).style.display = 'none';
+}
+
+async function saveEditComment(taskId, cid) {
+  const input = document.getElementById('cedit-input-'+cid);
+  const newText = input ? input.value.trim() : '';
+  if (!newText) return;
+  try {
+    const ref = db.collection(COLL).doc(taskId);
+    const snap = await ref.get();
+    if (!snap.exists) return;
+    const cur = snap.data();
+    const comments = cur.comments || {};
+    if (!comments[cid]) return;
+    comments[cid].text = newText;
+    comments[cid].edited = true;
+    await ref.set({...cur, comments}, {merge:true});
+    showToast('Comentário editado');
+  } catch(err) {
+    console.error('Erro ao editar comentário:', err);
+    showToast('⚠️ Erro ao editar', true);
+  }
+}
+
 async function addTask(phId) {
   if (!userName) { showNameModal(); return; }
   const name = document.getElementById('aname-'+phId).value.trim();
   const detail = document.getElementById('adetail-'+phId).value.trim();
   const tag = document.getElementById('atag-'+phId).value;
+  const weekLabel = document.getElementById('aweek-'+phId).value;
   const dates = document.getElementById('adate-'+phId).value.trim();
   if (!name) return;
   try {
     const id = 'dyn_'+Date.now();
     await db.collection(COLL).doc(id).set({
-      id, type:'dyn', phaseId:phId, name, detail, tag, dates,
+      id, type:'dyn', phaseId:phId, weekLabel, name, detail, tag, dates,
       done:false, doneBy:'', comments:{},
       createdBy:userName, createdAt:new Date()
     });
@@ -798,19 +871,32 @@ db.collection(COLL).onSnapshot(snap => {
 });
 
 // ── PRESENCE ──
-const presId = 'pres_'+Math.random().toString(36).substr(2,6);
+function getPresKey() {
+  return 'pres_' + (userName || localStorage.getItem('roadmap_name') || 'anon_' + Math.random().toString(36).substr(2,6));
+}
 function updatePresence() {
-  db.collection(COLL+'_pres').doc(presId).set({name:userName||'anônimo',at:new Date()});
+  if (!userName) return;
+  db.collection(COLL+'_pres').doc(getPresKey()).set({name:userName, at:new Date()});
 }
 async function refreshPresence() {
   updatePresence();
-  const snap = await db.collection(COLL+'_pres').get();
-  const active = snap.docs.filter(d => {
-    const at = d.data().at?.toDate?.();
-    return at && Date.now() - at.getTime() < 90000;
-  });
-  document.getElementById('online-txt').textContent = active.length + (active.length===1?' pessoa online':' pessoas online');
+  try {
+    const snap = await db.collection(COLL+'_pres').get();
+    const now = Date.now();
+    const active = [];
+    snap.docs.forEach(d => {
+      const at = d.data().at?.toDate?.();
+      if (at && now - at.getTime() < 120000) active.push(d.data().name);
+    });
+    const unique = [...new Set(active)];
+    document.getElementById('online-txt').textContent =
+      unique.length === 1 ? '1 pessoa online' : unique.length + ' pessoas online';
+  } catch(e) { /* ignore */ }
 }
+// clean up on close
+window.addEventListener('beforeunload', () => {
+  if (userName) db.collection(COLL+'_pres').doc(getPresKey()).delete().catch(()=>{});
+});
 // ── USER INIT ──
 if (userName) {
   hideNameModal();
