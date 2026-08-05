@@ -642,12 +642,22 @@ function updateGlobalStats(done, total, comments) {
 async function toggleTask(e, taskId) {
   e.stopPropagation();
   if (!userName) { showNameModal(); return; }
-  const ref = db.collection(COLL).doc(taskId);
-  const snap = await ref.get();
-  const cur = snap.exists ? snap.data() : {};
-  const newDone = !cur.done;
-  await ref.set({...cur, done:newDone, doneBy:newDone?userName:'', updatedAt:new Date()}, {merge:true});
-  showToast(newDone ? `✓ Marcado por ${userName}` : 'Desmarcado');
+  try {
+    const ref = db.collection(COLL).doc(taskId);
+    const snap = await ref.get();
+    const cur = snap.exists ? snap.data() : {};
+    const newDone = !cur.done;
+    await ref.set({...cur, done:newDone, doneBy:newDone?userName:'', updatedAt:new Date()}, {merge:true});
+    showToast(newDone ? `✓ Marcado por ${userName}` : 'Desmarcado');
+  } catch(err) {
+    console.error('Erro ao marcar tarefa:', err);
+    showToast('⚠️ Erro: atualize as regras do Firestore', true);
+    // fallback local
+    fbData[taskId] = fbData[taskId] || {};
+    fbData[taskId].done = !fbData[taskId].done;
+    fbData[taskId].doneBy = fbData[taskId].done ? userName : '';
+    render();
+  }
 }
 
 async function addComment(taskId) {
@@ -655,26 +665,35 @@ async function addComment(taskId) {
   const input = document.getElementById('ci-'+taskId);
   const text = input.value.trim();
   if (!text) return;
-  const ref = db.collection(COLL).doc(taskId);
-  const snap = await ref.get();
-  const cur = snap.exists ? snap.data() : {};
-  const comments = cur.comments || {};
-  const cid = 'c'+Date.now();
-  const now = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-  comments[cid] = {text, author:userName, when:now};
-  await ref.set({...cur, comments}, {merge:true});
-  input.value = '';
-  showToast('Comentário salvo');
+  try {
+    const ref = db.collection(COLL).doc(taskId);
+    const snap = await ref.get();
+    const cur = snap.exists ? snap.data() : {};
+    const comments = cur.comments || {};
+    const cid = 'c'+Date.now();
+    const now = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    comments[cid] = {text, author:userName, when:now};
+    await ref.set({...cur, comments}, {merge:true});
+    input.value = '';
+    showToast('Comentário salvo');
+  } catch(err) {
+    console.error('Erro ao salvar comentário:', err);
+    showToast('⚠️ Erro ao salvar. Verifique as regras do Firebase.', true);
+  }
 }
 
 async function delComment(taskId, cid) {
-  const ref = db.collection(COLL).doc(taskId);
-  const snap = await ref.get();
-  if (!snap.exists) return;
-  const cur = snap.data();
-  const comments = cur.comments || {};
-  delete comments[cid];
-  await ref.set({...cur, comments}, {merge:true});
+  try {
+    const ref = db.collection(COLL).doc(taskId);
+    const snap = await ref.get();
+    if (!snap.exists) return;
+    const cur = snap.data();
+    const comments = cur.comments || {};
+    delete comments[cid];
+    await ref.set({...cur, comments}, {merge:true});
+  } catch(err) {
+    console.error('Erro ao deletar comentário:', err);
+  }
 }
 
 async function addTask(phId) {
@@ -684,14 +703,19 @@ async function addTask(phId) {
   const tag = document.getElementById('atag-'+phId).value;
   const dates = document.getElementById('adate-'+phId).value.trim();
   if (!name) return;
-  const id = 'dyn_'+Date.now();
-  await db.collection(COLL).doc(id).set({
-    id, type:'dyn', phaseId:phId, name, detail, tag, dates,
-    done:false, doneBy:'', comments:{},
-    createdBy:userName, createdAt:new Date()
-  });
-  hideAddForm(phId);
-  showToast('Tarefa criada');
+  try {
+    const id = 'dyn_'+Date.now();
+    await db.collection(COLL).doc(id).set({
+      id, type:'dyn', phaseId:phId, name, detail, tag, dates,
+      done:false, doneBy:'', comments:{},
+      createdBy:userName, createdAt:new Date()
+    });
+    hideAddForm(phId);
+    showToast('Tarefa criada');
+  } catch(err) {
+    console.error('Erro ao criar tarefa:', err);
+    showToast('⚠️ Erro ao salvar. Verifique as regras do Firebase.', true);
+  }
 }
 
 function toggleDetail(taskId) {
@@ -736,12 +760,29 @@ function changeName() {
 }
 
 // ── TOAST ──
-function showToast(msg) {
+function showToast(msg, isError) {
   const t = document.getElementById('toast');
   t.textContent = msg;
+  t.style.background = isError ? '#DC2626' : '';
+  t.style.color = isError ? 'white' : '';
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  setTimeout(() => { t.classList.remove('show'); t.style.background=''; t.style.color=''; }, isError ? 5000 : 2500);
 }
+
+// ── FIREBASE DIAGNOSTIC ──
+async function checkFirebase() {
+  try {
+    await db.collection(COLL).limit(1).get();
+    console.log('Firebase OK');
+  } catch(err) {
+    console.error('Firebase bloqueado:', err.message);
+    const banner = document.createElement('div');
+    banner.style.cssText = 'position:fixed;top:4px;left:0;right:0;z-index:500;background:#DC2626;color:white;text-align:center;padding:10px 20px;font-size:13px;font-weight:600;';
+    banner.innerHTML = '⚠️ Firebase bloqueado (regras vencidas) — vá em <strong>console.firebase.google.com → Firestore → Regras</strong> e republique em modo de teste. <button onclick="this.parentElement.remove()" style="margin-left:12px;background:rgba(255,255,255,0.3);border:none;color:white;padding:2px 10px;border-radius:4px;cursor:pointer;">✕</button>';
+    document.body.appendChild(banner);
+  }
+}
+checkFirebase();
 
 // ── FIREBASE LISTENER ──
 // ── INIT: render immediately with empty data, Firebase updates live ──
