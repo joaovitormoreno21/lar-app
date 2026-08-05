@@ -744,10 +744,16 @@ function showToast(msg) {
 }
 
 // ── FIREBASE LISTENER ──
+// ── INIT: render immediately with empty data, Firebase updates live ──
+render();
+
 db.collection(COLL).onSnapshot(snap => {
   snap.forEach(doc => { fbData[doc.id] = {id:doc.id,...doc.data()}; });
   snap.docChanges().forEach(c => { if (c.type==='removed') delete fbData[c.doc.id]; });
   render();
+}, err => {
+  console.warn('Firebase offline ou regras bloqueando:', err.message);
+  // app still works with local state
 });
 
 // ── PRESENCE ──
@@ -764,19 +770,19 @@ async function refreshPresence() {
   });
   document.getElementById('online-txt').textContent = active.length + (active.length===1?' pessoa online':' pessoas online');
 }
-refreshPresence();
-setInterval(refreshPresence, 60000);
-
-// ── INIT ──
+// ── USER INIT ──
 if (userName) {
   hideNameModal();
   document.getElementById('sb-av').textContent = userName[0].toUpperCase();
   document.getElementById('sb-av').style.background = avatarColor(userName);
   document.getElementById('sb-name').textContent = userName;
 } else {
+  // show modal but content is already visible behind it
   document.getElementById('who-overlay').style.display='flex';
   setTimeout(() => document.getElementById('who-input').focus(), 100);
 }
+refreshPresence();
+setInterval(refreshPresence, 60000);
 </script>
 </body>
 </html>
