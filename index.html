@@ -54,7 +54,7 @@ body{font-family:'Nunito',sans-serif;background:radial-gradient(1100px 640px at 
 .login-btn{background:var(--grad-warm);color:white;border:none;border-radius:16px;padding:16px 30px;font-size:16px;font-weight:800;cursor:pointer;font-family:var(--f-disp);box-shadow:0 10px 22px rgba(255,107,107,0.4);transition:transform 0.12s,box-shadow 0.12s;display:flex;align-items:center;gap:10px;}
 .login-btn:active{transform:translateY(2px);box-shadow:0 5px 14px rgba(255,107,107,0.35);}
 .login-icon{font-size:20px;}
-.error-msg{background:var(--red-l);border:1px solid #FCA5A5;color:#B4453A;padding:14px;border-radius:14px;margin-top:20px;font-size:13px;font-weight:700;max-width:320px;text-align:center;}
+.error-msg{background:var(--red-l);border:1px solid #FCA5A5;color:#B4453A;padding:14px;border-radius:14px;margin-top:20px;font-size:13px;font-weight:700;max-width:320px;text-align:center;white-space:pre-wrap;line-height:1.5;}
 
 /* ── Loading ── */
 #loading-screen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;gap:20px;}
@@ -774,22 +774,31 @@ function showScreen(id) {
 
 showScreen('loading');
 
-// Captura o resultado do redirect (quando volta do login Google no Safari/iPhone)
+// Diagnóstico: mostra erros do redirect na tela
 auth.getRedirectResult().then(result => {
   if (result && result.user) {
-    currentUser = result.user;
+    console.log('Redirect login OK:', result.user.email);
+  } else {
+    console.log('getRedirectResult: sem usuário (normal se não veio de redirect)');
   }
 }).catch(error => {
   console.error('Erro no redirect:', error.code, error.message);
+  showScreen('login');
   const box = document.getElementById('login-error');
   if (box) {
-    box.textContent = 'Erro ao fazer login: ' + error.message;
+    let msg = 'Erro no login: ' + error.code;
+    if (error.code === 'auth/unauthorized-domain') {
+      msg = '⚠️ Domínio não autorizado no Firebase.\nVá em Authentication → Settings → Authorized domains e adicione: joaovitormoreno21.github.io';
+    } else if (error.code === 'auth/web-storage-unsupported') {
+      msg = '⚠️ Seu navegador bloqueou cookies de terceiros. Tente abrir o app no Chrome ou permita cookies nas configurações do Safari.';
+    }
+    box.textContent = msg;
     box.style.display = 'block';
   }
-  showScreen('login');
 });
 
 auth.onAuthStateChanged(async (user) => {
+  console.log('onAuthStateChanged:', user ? user.email : 'null');
   if (user) {
     currentUser = user;
     showScreen('loading');
